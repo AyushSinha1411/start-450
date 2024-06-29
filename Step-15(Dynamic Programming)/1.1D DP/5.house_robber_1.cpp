@@ -15,91 +15,83 @@ APPROACH:
 CODE:
 */
 
-// Recursive approach with memoization
-int getMaxUtil(int i, int j, int m, vector<vector<int>>& matrix, vector<vector<int>>& dp) {
-    if (j < 0 || j >= m) return -1e9; // Out of bounds
-    if (i == 0) return matrix[0][j]; // Base case: top row
+// Function to solve the problem using dynamic programming
+int solveUtil(int ind, vector<int>& arr, vector<int>& dp) {
+    // If the result for this index is already computed, return it
+    if (dp[ind] != -1)
+        return dp[ind];
 
-    if (dp[i][j] != -1) return dp[i][j]; // Return memoized result
+    // Base cases
+    if (ind == 0) 
+        return arr[ind];
+    if (ind < 0)  
+        return 0;
 
-    int up = matrix[i][j] + getMaxUtil(i - 1, j, m, matrix, dp);
-    int leftDiagonal = matrix[i][j] + getMaxUtil(i - 1, j - 1, m, matrix, dp);
-    int rightDiagonal = matrix[i][j] + getMaxUtil(i - 1, j + 1, m, matrix, dp);
+    // Choose the current element or skip it, and take the maximum
+    int pick = arr[ind] + solveUtil(ind - 2, arr, dp); // Choosing the current element
+    int nonPick = 0 + solveUtil(ind - 1, arr, dp);      // Skipping the current element
 
-    return dp[i][j] = max(up, max(leftDiagonal, rightDiagonal)); // Memoize and return the result
+    // Store the result in the DP table and return it
+    return dp[ind] = max(pick, nonPick);
 }
 
-int getMaxPathSumMemo(vector<vector<int>>& matrix) {
-    int n = matrix.size();
-    int m = matrix[0].size();
-    vector<vector<int>> dp(n, vector<int>(m, -1)); // Memoization table
-
-    int maxi = INT_MIN;
-    for (int j = 0; j < m; j++) {
-        maxi = max(maxi, getMaxUtil(n - 1, j, m, matrix, dp)); // Calculate max path sum for each cell in the last row
-    }
-
-    return maxi;
+// Function to initiate the solving process
+int solve(int n, vector<int>& arr) {
+    vector<int> dp(n, -1); // Initialize the DP table with -1
+    return solveUtil(n - 1, arr, dp); // Start solving from the last element
 }
+
 
 // Tabulation approach
-int getMaxPathSumTabulation(vector<vector<int>>& matrix) {
-    int n = matrix.size();
-    int m = matrix[0].size();
-    vector<vector<int>> dp(n, vector<int>(m, 0));
-
-    for (int j = 0; j < m; j++) {
-        dp[0][j] = matrix[0][j]; // Initialize the first row
-    }
-
+// Function to solve the problem using dynamic programming
+int solveUtil(int n, vector<int>& arr, vector<int>& dp) {
+    // Base case: If there are no elements in the array, return 0
+    dp[0] = arr[0];
+    
+    // Iterate through the elements of the array
     for (int i = 1; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            int up = matrix[i][j] + dp[i - 1][j];
-            int leftDiagonal = (j > 0) ? matrix[i][j] + dp[i - 1][j - 1] : -1e9;
-            int rightDiagonal = (j < m - 1) ? matrix[i][j] + dp[i - 1][j + 1] : -1e9;
-
-            dp[i][j] = max(up, max(leftDiagonal, rightDiagonal)); // Calculate the max path sum for the current cell
-        }
+        // Calculate the maximum value by either picking the current element
+        // or not picking it (i.e., taking the maximum of dp[i-2] + arr[i] and dp[i-1])
+        int pick = arr[i];
+        if (i > 1)
+            pick += dp[i - 2];
+        int nonPick = dp[i - 1];
+        
+        // Store the maximum value in the dp array
+        dp[i] = max(pick, nonPick);
     }
-
-    int maxi = INT_MIN;
-    for (int j = 0; j < m; j++) {
-        maxi = max(maxi, dp[n - 1][j]); // Find the maximum path sum in the last row
-    }
-
-    return maxi;
+    
+    // The last element of the dp array will contain the maximum sum
+    return dp[n - 1];
 }
+
+// Function to initiate the solving process
+int solve(int n, vector<int>& arr) {
+    vector<int> dp(n, 0); // Initialize dp array with 0
+    return solveUtil(n, arr, dp);
+}
+
 
 // Space-optimized approach
-int getMaxPathSumOptimized(vector<vector<int>>& matrix) {
-    int n = matrix.size();
-    int m = matrix[0].size();
-    vector<int> prev(m, 0); // Previous row
-    vector<int> cur(m, 0);  // Current row
-
-    for (int j = 0; j < m; j++) {
-        prev[j] = matrix[0][j]; // Initialize the first row
-    }
-
+// Function to solve the problem using dynamic programming
+int solve(int n, vector<int>& arr) {
+    int prev = arr[0];   // Initialize the maximum sum ending at the previous element
+    int prev2 = 0;       // Initialize the maximum sum ending two elements ago
+    
     for (int i = 1; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            int up = matrix[i][j] + prev[j];
-            int leftDiagonal = (j > 0) ? matrix[i][j] + prev[j - 1] : -1e9;
-            int rightDiagonal = (j < m - 1) ? matrix[i][j] + prev[j + 1] : -1e9;
-
-            cur[j] = max(up, max(leftDiagonal, rightDiagonal)); // Calculate the max path sum for the current cell
-        }
-        prev = cur; // Update previous row with current row
+        int pick = arr[i];  // Maximum sum if we pick the current element
+        if (i > 1)
+            pick += prev2;  // Add the maximum sum two elements ago
+        
+        int nonPick = 0 + prev;  // Maximum sum if we don't pick the current element
+        
+        int cur_i = max(pick, nonPick);  // Maximum sum ending at the current element
+        prev2 = prev;   // Update the maximum sum two elements ago
+        prev = cur_i;   // Update the maximum sum ending at the previous element
     }
-
-    int maxi = INT_MIN;
-    for (int j = 0; j < m; j++) {
-        maxi = max(maxi, prev[j]); // Find the maximum path sum in the last row
-    }
-
-    return maxi;
+    
+    return prev;  // Return the maximum sum
 }
-
 /*
 TIME COMPLEXITY:
 - All approaches: O(n * m), where n is the number of rows and m is the number of columns. Each cell is processed once.

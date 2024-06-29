@@ -11,38 +11,34 @@ CODE:
 */
 
 // Memoization approach
-int f(int idx, vector<int>& height, vector<int>& dp) {
-    if (idx == 0) {
-        return 0;
-    }
-    if (dp[idx] != -1) {
-        return dp[idx];
-    }
-    int left = abs(height[idx] - height[idx - 1]) + f(idx - 1, height, dp);
-    int right = INT_MAX;
-    if (idx > 1) {
-        right = abs(height[idx] - height[idx - 2]) + f(idx - 2, height, dp);
-    }
-    return dp[idx] = min(left, right);
+int solve(int ind, vector<int>& height, vector<int>& dp){
+    if(ind==0) return 0;
+    if(dp[ind]!=-1) return dp[ind];
+    int jumpTwo = INT_MAX;
+    int jumpOne= solve(ind-1, height,dp)+ abs(height[ind]-height[ind-1]);
+    if(ind>1)
+        jumpTwo = solve(ind-2, height,dp)+ abs(height[ind]-height[ind-2]);
+    
+    return dp[ind]=min(jumpOne, jumpTwo);
 }
 
 int minimumEnergyMemoization(vector<int>& height, int n) {
     vector<int> dp(n, -1);
-    return f(n - 1, height, dp);
+    return solve(n - 1, height, dp);
 }
 
 // Tabulation approach
 int minimumEnergyTabulation(vector<int>& height, int n) {
     vector<int> dp(n, 0);
     dp[0] = 0;
-    for (int i = 1; i < n; i++) {
-        int left = dp[i - 1] + abs(height[i] - height[i - 1]);
-        int right = INT_MAX;
-        if (i > 1) {
-            right = dp[i - 2] + abs(height[i] - height[i - 2]);
-        }
-        dp[i] = min(left, right);
-    }
+ for(int ind=1;ind<n;ind++){
+      int jumpTwo = INT_MAX;
+        int jumpOne= dp[ind-1] + abs(height[ind]-height[ind-1]);
+        if(ind>1)
+            jumpTwo = dp[ind-2] + abs(height[ind]-height[ind-2]);
+    
+        dp[ind]=min(jumpOne, jumpTwo);
+  }
     return dp[n - 1];
 }
 
