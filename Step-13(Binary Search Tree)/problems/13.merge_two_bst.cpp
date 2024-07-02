@@ -24,46 +24,35 @@ struct Node {
     Node(int x) : val(x), left(nullptr), right(nullptr) {}
 };
 
-// Function to merge two BSTs into a sorted list
-vector<int> mergeTwoBST(Node* root1, Node* root2) {
-    // Vector to store the merged result
-    vector<int> res;
+class BSTIterator {
+private:
+    stack<TreeNode*> myStack;
 
-    // Two stacks to perform in-order traversal of both BSTs
-    stack<Node*> s1, s2;
-
-    // Continue until both stacks and both trees are fully traversed
-    while (root1 || root2 || !s1.empty() || !s2.empty()) {
-        // Traverse the left subtree of the first BST
-        while (root1) {
-            s1.push(root1);
-            root1 = root1->left;
-        }
-        // Traverse the left subtree of the second BST
-        while (root2) {
-            s2.push(root2);
-            root2 = root2->left;
-        }
-
-        // Case 1: The stack of the second BST is empty or the top of the first stack is smaller
-        if (s2.empty() || (!s1.empty() && s1.top()->val <= s2.top()->val)) {
-            root1 = s1.top();
-            s1.pop();
-            res.push_back(root1->val);
-            root1 = root1->right;
-        }
-        // Case 2: The stack of the first BST is empty or the top of the second stack is smaller
-        else {
-            root2 = s2.top();
-            s2.pop();
-            res.push_back(root2->val);
-            root2 = root2->right;
-        }
+public:
+    // Constructor that initializes the stack with the leftmost path of the tree
+    BSTIterator(TreeNode* root) {
+        pushAll(root);
     }
 
-    // Return the merged result
-    return res;
-}
+    // Returns whether we have a next smallest number
+    bool hasNext() {
+        return !myStack.empty();
+    }
+
+    // Returns the next smallest number
+    int next() {
+        TreeNode* tmpNode = myStack.top();
+        myStack.pop();
+        pushAll(tmpNode->right);
+        return tmpNode->val;
+    }
+
+private:
+    // Helper function to push all leftmost nodes to the stack
+    void pushAll(TreeNode* node) {
+        for (; node != NULL; myStack.push(node), node = node->left);
+    }
+};
 
 /*
 EXAMPLE USAGE:
