@@ -107,56 +107,67 @@ APPROACH:
 CODE:
 */
 
-#include <iostream>
-#include <algorithm>
-using namespace std;
 
-// Definition for a binary tree node.
-struct TreeNode {
-    int key;
-    TreeNode *left;
-    TreeNode *right;
-    TreeNode(int x) : key(x), left(NULL), right(NULL) {}
-};
+int findMaxDistance(map<BinaryTreeNode*, BinaryTreeNode*>& mpp, BinaryTreeNode* target) {
+    queue<BinaryTreeNode*> q;
+    q.push(target);
+    map<BinaryTreeNode*, int> vis;
+    vis[target] = 1;
+    int maxi = 0;
 
-// Global variable to store the result
-int res = 0;
-
-// Function to find the time for the tree to burn
-int burnTime(TreeNode* root, int leaf, int& dist) {
-    // Base case: If the current node is NULL, return 0
-    if (root == NULL) {
-        return 0;
+    while (!q.empty()) {
+        int sz = q.size();
+        int fl = 0;
+        for (int i = 0; i < sz; i++) {
+            auto node = q.front();
+            q.pop();
+            if (node->left && !vis[node->left]) {
+                fl = 1;
+                vis[node->left] = 1;
+                q.push(node->left);
+            }
+            if (node->right && !vis[node->right]) {
+                fl = 1;
+                vis[node->right] = 1;
+                q.push(node->right);
+            }
+            if (mpp[node] && !vis[mpp[node]]) {
+                fl = 1;
+                vis[mpp[node]] = 1;
+                q.push(mpp[node]);
+            }
+        }
+        if (fl) maxi++;
     }
-
-    // If the current node is the target leaf node
-    if (root->key == leaf) {
-        dist = 0;
-        return 1;
-    }
-
-    // Variables to store the distance from the target leaf in left and right subtrees
-    int ldist = -1, rdist = -1;
-
-    // Recursively find the burn time for the left and right subtrees
-    int lh = burnTime(root->left, leaf, ldist);
-    int rh = burnTime(root->right, leaf, rdist);
-
-    // If the target leaf is found in the left subtree
-    if (ldist != -1) {
-        dist = ldist + 1;
-        res = max(res, dist + rh);
-    }
-    // If the target leaf is found in the right subtree
-    else if (rdist != -1) {
-        dist = rdist + 1;
-        res = max(res, dist + lh);
-    }
-
-    // Return the height of the subtree rooted at the current node
-    return max(lh, rh) + 1;
+    return maxi;
 }
 
+BinaryTreeNode* bfsToMapParents(BinaryTreeNode* root, map<BinaryTreeNode*, BinaryTreeNode*>& mpp, int start) {
+    queue<BinaryTreeNode*> q;
+    q.push(root);
+    BinaryTreeNode* res = nullptr;
+    while (!q.empty()) {
+        BinaryTreeNode* node = q.front();
+        q.pop();
+        if (node->data == start) res = node;
+        if (node->left) {
+            mpp[node->left] = node;
+            q.push(node->left);
+        }
+        if (node->right) {
+            mpp[node->right] = node;
+            q.push(node->right);
+        }
+    }
+    return res;
+}
+
+int timeToBurnTree(BinaryTreeNode* root, int start) {
+    map<BinaryTreeNode*, BinaryTreeNode*> mpp;
+    BinaryTreeNode* target = bfsToMapParents(root, mpp, start);
+    int maxi = findMaxDistance(mpp, target);
+    return maxi;
+}
 /*
 TIME COMPLEXITY:
 - O(N), where N is the number of nodes in the binary tree. This is because we may need to visit each node to calculate the burn time.
