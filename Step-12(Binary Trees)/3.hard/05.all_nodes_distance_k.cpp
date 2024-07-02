@@ -33,59 +33,121 @@ APPROACH:
 CODE:
 */
 
-// Definition for a binary tree node.
+// TreeNode structure
 struct TreeNode {
     int val;
     TreeNode *left;
     TreeNode *right;
-    TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
 };
 
-// Helper function to find nodes at distance k in the subtree rooted at 'root'.
-void printkdistanceNodeDown(TreeNode* root, int k, vector<int>& result) {
-    if (root == nullptr || k < 0) return;
-
-    if (k == 0) {
-        result.push_back(root->val);
-        return;
+// Class to find nodes at a
+// distance K from a target node
+class Solution {
+    
+    // Helper function to mark parents
+    // of nodes in the tree
+    void markParents(TreeNode *root, unordered_map<TreeNode*,
+        TreeNode*> &parent_track, TreeNode* target) {
+        
+        // Level Order Traversal by taking a queue
+        queue<TreeNode*> queue;
+        queue.push(root);
+        
+        // Iterate over all nodes
+        while (!queue.empty()) {
+            TreeNode* current = queue.front();
+            queue.pop();
+            
+            // Assign parents to left child and
+            // right child if they exist
+            if (current->left) {
+                parent_track[current->left] = current;
+                queue.push(current->left);
+            }
+            
+            if (current->right) {
+                parent_track[current->right] = current;
+                queue.push(current->right);
+            }
+        }
     }
 
-    printkdistanceNodeDown(root->left, k - 1, result);
-    printkdistanceNodeDown(root->right, k - 1, result);
-}
+public:
+    // Function to find nodes at a
+    // distance K from the target node
+    vector<int> distanceK(TreeNode* root, TreeNode* target, int k) {
+        
+        // Map to mark the parents of all nodes
+        unordered_map<TreeNode*, TreeNode*> parent_track;
+        // Mark parents of all nodes
+        markParents(root, parent_track, target); 
+        // Keeps track of visited nodes
+        unordered_map<TreeNode*, bool> visited; 
+        // Queue to perform level-order traversal
+        queue<TreeNode*> queue; 
+         // Start traversal from the target node
+        queue.push(target);
+        // Tracks the current level
+        // while traversing the tree
+        int curr_level = 0; 
+        
+        // Continue traversal until the queue is empty
+        while (!queue.empty()) { 
+            // Get the number of nodes at the current level
+            int size = queue.size(); 
+            if (curr_level++ == k) { 
+                // Break if the current level
+                // matches the required distance (k)
+                break;
+            }
+            
+            // Traverse the current level of the tree
+            for (int i = 0; i < size; i++) {
+                // Get the front node in the queue
+                TreeNode* current = queue.front(); 
+                // Remove the front node from the queue
+                queue.pop(); 
+                
+                // Add unvisited left child to the queue
+                if (current->left && !visited[current->left]) {
+                    queue.push(current->left);
+                    // Mark left child as visited
+                    visited[current->left] = true; 
+                }
+                
+                // Add unvisited right child to the queue
+                if (current->right && !visited[current->right]) {
+                    queue.push(current->right);
+                     // Mark right child as visited
+                    visited[current->right] = true;
+                }
+                
+                // Add unvisited parent node to the queue
+                if (parent_track[current] && !visited[parent_track[current]]) {
+                    queue.push(parent_track[current]);
+                    // Mark parent node as visited
+                    visited[parent_track[current]] = true; 
+                }
+            }
+        }
+        
+        // Stores nodes at distance k from the target
+        vector<int> result; 
+        while (!queue.empty()) { 
+            // Extract nodes at distance k from the queue
+            TreeNode* current = queue.front();
+            queue.pop();
+            // Store node values in the result vector
+            result.push_back(current->val); 
+        }
 
-// Main function to find nodes at distance k from the target node.
-int printkdistanceNode(TreeNode* root, TreeNode* target, int k, vector<int>& result) {
-    if (root == nullptr) return -1;
-
-    if (root == target) {
-        printkdistanceNodeDown(root, k, result);
-        return 0;
+        
+        // Return nodes at distance
+        // K from the target
+        return result; 
     }
-
-    int dl = printkdistanceNode(root->left, target, k, result);
-    if (dl != -1) {
-        if (dl + 1 == k) result.push_back(root->val);
-        else printkdistanceNodeDown(root->right, k - dl - 2, result);
-        return 1 + dl;
-    }
-
-    int dr = printkdistanceNode(root->right, target, k, result);
-    if (dr != -1) {
-        if (dr + 1 == k) result.push_back(root->val);
-        else printkdistanceNodeDown(root->left, k - dr - 2, result);
-        return 1 + dr;
-    }
-
-    return -1;
-}
-
-// Function to find all nodes at distance k from the target node.
-vector<int> distanceK(TreeNode* root, TreeNode* target, int k) {
-    vector<int> result;
-    printkdistanceNode(root, target, k, result);
-    return result;
-}
+};
 
 /*
 TIME COMPLEXITY:
