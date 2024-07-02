@@ -23,51 +23,50 @@ struct TreeNode {
     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
 };
 
-// Function to recover a Binary Search Tree where two nodes have been swapped
-void recoverTree(TreeNode* root) {
-    // Pointers to track the nodes to be swapped
-    TreeNode *x = nullptr, *y = nullptr, *pred = nullptr, *predecessor = nullptr;
+class Solution {
+private:
+    TreeNode* first;
+    TreeNode* prev;
+    TreeNode* middle;
+    TreeNode* last;
 
-    // Use Morris Traversal to traverse the tree in-order
-    while (root != nullptr) {
-        // If there is a left child, find the predecessor
-        if (root->left != nullptr) {
-            predecessor = root->left;
-            while (predecessor->right != nullptr && predecessor->right != root) {
-                predecessor = predecessor->right;
-            }
+    // Inorder traversal function to find the two swapped nodes
+    void inorder(TreeNode* root) {
+        if (root == NULL) return;
 
-            // Set the right child of the predecessor to the current root
-            if (predecessor->right == nullptr) {
-                predecessor->right = root;
-                root = root->left;
-            }
-            // If the link already exists, break it and check for swapped nodes
-            else {
-                // Check for swapped nodes
-                if (pred != nullptr && root->val < pred->val) {
-                    y = root;
-                    if (x == nullptr) x = pred;
-                }
-                pred = root;
-                predecessor->right = nullptr;
-                root = root->right;
+        inorder(root->left);
+
+        // If this is the first violation, mark these two nodes as 'first' and 'middle'
+        if (prev != NULL && root->val < prev->val) {
+            if (first == NULL) {
+                first = prev;
+                middle = root;
+            } else {
+                // If this is the second violation, mark this node as 'last'
+                last = root;
             }
         }
-        // If there is no left child, just go right
-        else {
-            // Check for swapped nodes
-            if (pred != nullptr && root->val < pred->val) {
-                y = root;
-                if (x == nullptr) x = pred;
-            }
-            pred = root;
-            root = root->right;
-        }
+
+        // Mark this node as previous
+        prev = root;
+
+        inorder(root->right);
     }
-    // Swap the values of the two identified nodes
-    swap(x->val, y->val);
-}
+
+public:
+    // Function to recover the BST by fixing the swapped nodes
+    void recoverTree(TreeNode* root) {
+        first = middle = last = prev = NULL;
+        prev = new TreeNode(INT_MIN);
+        inorder(root);
+        
+        // Fix the swapped nodes
+        if (first && last) 
+            swap(first->val, last->val);
+        else if (first && middle) 
+            swap(first->val, middle->val);
+    }
+};
 
 /*
 EXAMPLE USAGE:
