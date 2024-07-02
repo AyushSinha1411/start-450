@@ -15,88 +15,157 @@ APPROACH:
 CODE:
 */
 
-#include <string>
-#include <vector>
-#include <algorithm>
-using namespace std;
+// Define a struct representing a
+// node in the Trie data structure
+struct Node {
+     // Array of pointers to child nodes
+     // (assuming only lowercase English letters)
+    Node* links[26]; 
+    // Flag indicating if this node
+    // marks the end of a word
+    bool flag = false;  
 
-// Trie node structure
-struct trieNode {
-    struct trieNode *child[26]; // Array to store links to child nodes
-    bool isEnding; // Flag to indicate if a node marks the end of a word
+    // Method to check if the node
+    // contains a child node
+    // corresponding to a given character
+    bool containsKey(char ch) {
+         // Check if the link for
+         // the character exists
+        return (links[ch - 'a'] != nullptr); 
+    }
+
+    // Method to get the child node
+    // corresponding to a given character
+    Node* get(char ch) {
+         // Return the corresponding child node
+        return links[ch - 'a']; 
+    }
+
+    // Method to set a child node
+    // for a given character
+    void put(char ch, Node* node) {
+        // Set the link for the
+        // character to the provided node
+        links[ch - 'a'] = node;  
+    }
+
+    // Method to mark the node
+    // as the end of a word
+    void setEnd() {
+         // Set the flag to
+         // indicate the end of a word
+        flag = true; 
+    }
+
+    // Method to check if the
+    // node marks the end of a word
+    bool isEnd() {
+        // Return the flag indicating
+        // if it's the end of a word
+        return flag;  
+    }
 };
 
-// Function to create a new trie node
-struct trieNode *newTrieNode(void) {
-    struct trieNode *newNode = new trieNode;
-    newNode->isEnding = false;
-    for (int i = 0; i < 26; i++)
-        newNode->child[i] = NULL;
-    return newNode;
-}
+// Define a class for
+// implementing the Trie data structure
+class Trie {
+private:
+    // Pointer to the root
+    // node of the Trie
+    Node* root;  
 
-// Function to insert a word into the trie
-void insert(struct trieNode *root, string str) {
-    int len = str.length();
-    struct trieNode *pCrawl = root;
-
-    for (int level = 0; level < len; level++) {
-        int index = str[level] - 'a';
-        if (!pCrawl->child[index])
-            pCrawl->child[index] = newTrieNode();
-        pCrawl = pCrawl->child[index];
+public:
+    // Constructor to initialize
+    // the Trie data structure
+    Trie() {
+        // Create a new root
+        // node for the Trie
+        root = new Node();  
     }
-    // Mark the end of the word in the trie
-    pCrawl->isEnding = true;
-}
 
-// Function to check if all prefixes of a word are present in the trie
-bool allPrefixed(struct trieNode *root, string word) {
-    struct trieNode *pCrawl = root;
-    for (char c : word) {
-        int i = c - 'a';
-        pCrawl = pCrawl->child[i];
-        if (pCrawl == NULL || pCrawl->isEnding == false) {
-            return false;
+    // Method to insert a
+    // word into the Trie
+    void insert(string word) {
+         // Start traversal
+         // from the root node
+        Node* node = root; 
+        // Iterate through each
+        // character of the word
+        for (char ch : word) {  
+             // If the character doesn't
+             // exist as a child node
+            if (!node->containsKey(ch)) { 
+                 // Create a new node
+                 // for the character
+                node->put(ch, new Node()); 
+            }
+            // Move to the next node
+            node = node->get(ch);  
+        }
+         // Mark the last node as
+         // the end of the word
+        node->setEnd(); 
+    }
+
+    // Method to check if all prefixes
+    // of a given word exist in the Trie
+    bool checkIfAllPrefixExists(string word) {
+         // Start traversal from the root node
+        Node* node = root; 
+        // Iterate through each
+        // character of the word
+        for (char ch : word) {  
+            // If the character
+            // exists as a child node
+            if (node->containsKey(ch)) {
+                // Move to the next node
+                node = node->get(ch);  
+            }
+            else {
+                 // Return false if
+                 // the prefix doesn't exist
+                return false; 
+            }
+        }
+         // Return true if
+         // all prefixes exist
+        return true; 
+    }
+};
+
+// Function to find the longest
+// complete string in a given vector of strings
+string completeString(int n, vector<string>& a) {
+    // Create a Trie object
+    Trie* obj = new Trie();  
+    // Insert each word into the Trie
+    for (const auto& word : a)  
+        obj->insert(word);
+        
+    // Initialize the variable to
+    // store the longest complete string
+    string longest = "";
+    // Iterate through each
+    // word in the vector
+    for (const auto& word : a) {  
+         // Check if all prefixes
+         // of the word exist
+        if (obj->checkIfAllPrefixExists(word)) { 
+            // Update the longest string if the current word
+            // is longer or lexicographically smaller
+            if (word.size() > longest.size() || (word.size() == longest.size() && word < longest)) {
+                 // Update the longest string
+                longest = word; 
+            }
         }
     }
-    // If all prefixes of the word are present in the trie
-    return true;
+    // Return "None" if no
+    // complete string found
+    if (longest.empty()) return "None"; 
+    // Return the longest complete string
+    return longest;  
 }
 
-// Function to find the complete string with all prefixes present
-string completeString(int n, vector<string> &a) {
-    // Initialize answer as empty string
-    string ans = "";
-
-    struct trieNode *root = newTrieNode();
-
-    // Insert each element of the array into the trie
-    for (string word : a)
-        insert(root, word);
-
-    // Traverse over strings and check which of them have all prefixes present in the array
-    for (string word : a) {
-        if (!allPrefixed(root, word))
-            continue;
-        // If the current word is longer than 'ans'
-        if (ans.size() < word.size()) {
-            ans = word;
-        }
-        // If the current word is of the same size as 'ans' but is lexicographically smaller than 'ans'
-        else if (ans.size() == word.size() && word < ans) {
-            ans = word;
-        }
-    }
-
-    // If no valid word is present, return "None"
-    if (ans.size() == 0) {
-        ans = "None";
-    }
-
-    // Return the result
-    return ans;
-}
 
 /*
 TIME COMPLEXITY:
