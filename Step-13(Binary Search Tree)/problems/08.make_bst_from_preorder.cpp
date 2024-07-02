@@ -16,50 +16,32 @@ APPROACH:
 CODE:
 */
 
-// Definition for a binary tree node.
-struct TreeNode {
-    int val;
-    TreeNode* left;
-    TreeNode* right;
-    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+class Solution {
+public:
+    // Function to create a BST from preorder traversal
+    TreeNode* bstFromPreorder(vector<int>& A) {
+        int i = 0; // Initialize index to 0
+        return build(A, i, INT_MAX); // Call the build function with the preorder vector, index, and initial bound
+    }
+
+    // Recursive function to build the BST
+    TreeNode* build(vector<int>& A, int& i, int bound) {
+        // Base case: if index reaches the end of the array or the current value exceeds the bound
+        if (i == A.size() || A[i] > bound) return NULL;
+
+        // Create a new node with the current value and increment the index
+        TreeNode* root = new TreeNode(A[i++]);
+
+        // Recursively build the left subtree with the current value as the new bound
+        root->left = build(A, i, root->val);
+
+        // Recursively build the right subtree with the current bound
+        root->right = build(A, i, bound);
+
+        return root; // Return the constructed subtree
+    }
 };
 
-// Utility function to construct the BST from preorder traversal
-TreeNode* constructTreeUtil(int pre[], int* preIndex, int key, int min, int max, int size) {
-    // Base case: if the current index is out of bounds, return null
-    if (*preIndex >= size) {
-        return nullptr;
-    }
-
-    TreeNode* root = nullptr;
-
-    // If the current key is within the min and max range
-    if (key > min && key < max) {
-        // Create a new node with the current key
-        root = new TreeNode(key);
-        *preIndex = *preIndex + 1;
-
-        // Recursively construct the left subtree with updated constraints
-        if (*preIndex < size) {
-            root->left = constructTreeUtil(pre, preIndex, pre[*preIndex], min, key, size);
-        }
-        // Recursively construct the right subtree with updated constraints
-        if (*preIndex < size) {
-            root->right = constructTreeUtil(pre, preIndex, pre[*preIndex], key, max, size);
-        }
-    }
-
-    return root;
-}
-
-// Function to construct BST from preorder traversal
-TreeNode* bstFromPreorder(vector<int>& preorder) {
-    int size = preorder.size();
-    if (size == 0) return nullptr;
-
-    int preIndex = 0;
-    return constructTreeUtil(preorder.data(), &preIndex, preorder[0], INT_MIN, INT_MAX, size);
-}
 
 /*
 EXAMPLE USAGE:
