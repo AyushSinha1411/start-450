@@ -67,19 +67,6 @@ int secondLargest(int arr[], int n) {
     return second_large;
 }
 
-int main() {
-    int arr[] = {1, 2, 4, 7, 7, 5};  
-    int n = sizeof(arr) / sizeof(arr[0]);
-    
-    int sS = secondSmallest(arr, n);
-    int sL = secondLargest(arr, n);
-    
-    cout << "Second smallest is " << sS << endl;
-    cout << "Second largest is " << sL << endl;
-    
-    return 0;
-}
-
 /*
 TIME COMPLEXITY: O(N), where N is the number of elements in the array.
 SPACE COMPLEXITY: O(1), as no extra space is used.
