@@ -33,17 +33,6 @@ int removeDuplicates(int arr[], int n) {
     return i + 1; // Return the new length of the array with unique elements
 }
 
-int main() {
-    int arr[] = {1, 1, 2, 2, 2, 3, 3};
-    int n = sizeof(arr) / sizeof(arr[0]);
-    int k = removeDuplicates(arr, n); // Get the new length after removing duplicates
-    cout << "The array after removing duplicate elements is " << endl;
-    for (int i = 0; i < k; i++) { // Print the new array
-        cout << arr[i] << " ";
-    }
-    return 0;
-}
-
 /*
 TIME COMPLEXITY: O(N), where N is the number of elements in the array.
 SPACE COMPLEXITY: O(1), as no extra space is used.
