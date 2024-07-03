@@ -32,20 +32,6 @@ int findLargestElement(int arr[], int n) {
     return max; // Return the largest element
 }
 
-int main() {
-    int arr1[] = {2, 5, 1, 3, 0};
-    int n = 5;
-    int max = findLargestElement(arr1, n); // Find the largest element in arr1
-    cout << "The largest element in the array is: " << max << endl;
-
-    int arr2[] = {8, 10, 5, 7, 9};
-    n = 5;
-    max = findLargestElement(arr2, n); // Find the largest element in arr2
-    cout << "The largest element in the array is: " << max << endl;
-    
-    return 0;
-}
-
 /*
 TIME COMPLEXITY: O(N), where N is the number of elements in the array.
 SPACE COMPLEXITY: O(1), as no extra space is used.
