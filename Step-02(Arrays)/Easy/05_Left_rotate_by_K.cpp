@@ -51,31 +51,6 @@ void RotateeletoLeft(int arr[], int n, int k) {
     Reverse(arr, 0, n - 1);
 }
 
-int main() {
-    int arr[] = {1, 2, 3, 4, 5, 6, 7};
-    int n = sizeof(arr) / sizeof(arr[0]);
-    int k = 3;
-
-    // Rotate to the right
-    RotateeletoRight(arr, n, k);
-    cout << "Array after rotating to right by " << k << " elements: ";
-    for (int i = 0; i < n; i++) {
-        cout << arr[i] << " ";
-    }
-    cout << endl;
-
-    // Reset array for left rotation
-    int arr2[] = {1, 2, 3, 4, 5, 6, 7};
-    RotateeletoLeft(arr2, n, k);
-    cout << "Array after rotating to left by " << k << " elements: ";
-    for (int i = 0; i < n; i++) {
-        cout << arr2[i] << " ";
-    }
-    cout << endl;
-
-    return 0;
-}
-
 /*
 TIME COMPLEXITY: O(N), where N is the number of elements in the array.
 SPACE COMPLEXITY: O(1), as no extra space is used.
