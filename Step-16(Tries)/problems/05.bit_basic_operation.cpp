@@ -2,6 +2,13 @@
 QUESTION:
 Implement a Trie data structure to support operations for inserting integers, finding the maximum XOR value with a given integer, and getting/setting bits in binary representation.
 
+
+EXAMPLE USAGE:
+Solution sol;
+int maxXOR = sol.XOR(5, 7);       // Finds maximum XOR value with 5 after inserting 7
+int bitCheck = sol.check(2, 3);   // Checks the bit value at position 2 after inserting 3
+int setBitVal = sol.setBit(3, 2); // Sets the bit at position 3 after inserting 2
+
 CODE:
 */
 
@@ -114,9 +121,4 @@ TIME COMPLEXITY:
 SPACE COMPLEXITY:
 - O(n) for storing n integers in the Trie.
 
-EXAMPLE USAGE:
-Solution sol;
-int maxXOR = sol.XOR(5, 7);       // Finds maximum XOR value with 5 after inserting 7
-int bitCheck = sol.check(2, 3);   // Checks the bit value at position 2 after inserting 3
-int setBitVal = sol.setBit(3, 2); // Sets the bit at position 3 after inserting 2
 */

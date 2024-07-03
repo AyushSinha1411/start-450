@@ -2,6 +2,12 @@
 QUESTION:
 Implement a Trie data structure to support operations for inserting integers and finding the maximum XOR value with a given integer from two sets of numbers.
 
+EXAMPLE USAGE:
+vector<int> arr1 = {3, 10, 5, 25, 2, 8};
+vector<int> arr2 = {1, 2, 3, 4, 5};
+int result = maxXOR(arr1.size(), arr2.size(), arr1, arr2);
+// result will hold the maximum XOR value between the two sets of numbers
+
 CODE:
 */
 
@@ -123,10 +129,4 @@ TIME COMPLEXITY:
 
 SPACE COMPLEXITY:
 - O(n * 32) for storing n numbers in the Trie, where each number is represented by 32 bits.
-
-EXAMPLE USAGE:
-vector<int> arr1 = {3, 10, 5, 25, 2, 8};
-vector<int> arr2 = {1, 2, 3, 4, 5};
-int result = maxXOR(arr1.size(), arr2.size(), arr1, arr2);
-// result will hold the maximum XOR value between the two sets of numbers
 */

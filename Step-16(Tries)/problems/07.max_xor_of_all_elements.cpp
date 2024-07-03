@@ -2,6 +2,12 @@
 QUESTION:
 Given an array of integers and multiple queries, each containing an integer, find the maximum XOR value for each query with any element from the array.
 
+EXAMPLE USAGE:
+vector<int> arr = {3, 10, 5, 25, 2, 8};
+vector<vector<int>> queries = {{2, 1}, {8, 2}, {5, 3}};
+vector<int> result = maxXorQueries(arr, queries);
+// result will hold the maximum XOR values for each query
+
 CODE:
 */
 
@@ -106,10 +112,4 @@ TIME COMPLEXITY:
 
 SPACE COMPLEXITY:
 - O(n * 32) for storing n numbers in the Trie, where each number is represented by 32 bits.
-
-EXAMPLE USAGE:
-vector<int> arr = {3, 10, 5, 25, 2, 8};
-vector<vector<int>> queries = {{2, 1}, {8, 2}, {5, 3}};
-vector<int> result = maxXorQueries(arr, queries);
-// result will hold the maximum XOR values for each query
 */

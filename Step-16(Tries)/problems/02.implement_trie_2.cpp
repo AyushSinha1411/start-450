@@ -145,12 +145,4 @@ TIME COMPLEXITY:
 
 SPACE COMPLEXITY:
 - O(N * len) where N is the number of words inserted and len is the average length of the words.
-
-EXAMPLE USAGE:
-Trie trie;
-trie.insert("apple");
-int countEqual = trie.countWordsEqualTo("apple");   // returns 1
-int countPrefix = trie.countWordsStartingWith("app"); // returns 1
-trie.erase("apple");
-countEqual = trie.countWordsEqualTo("apple");   // returns 0
 */

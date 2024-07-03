@@ -175,9 +175,4 @@ TIME COMPLEXITY:
 SPACE COMPLEXITY:
 - O(26 * m * n) for the trie nodes.
 
-EXAMPLE USAGE:
-int n = 5;
-vector<string> a = {"a", "ap", "app", "appl", "apple"};
-string result = completeString(n, a);
-// Output: "apple"
 */

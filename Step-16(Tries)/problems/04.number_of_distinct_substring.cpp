@@ -77,9 +77,4 @@ TIME COMPLEXITY:
 
 SPACE COMPLEXITY:
 - O(n^2) for the trie nodes.
-
-EXAMPLE USAGE:
-string s = "ababa";
-int result = countDistinctSubstrings(s);
-// Output: 10
 */
