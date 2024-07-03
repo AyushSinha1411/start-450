@@ -30,15 +30,6 @@ bool isSorted(int arr[], int n) {
     return true; // Return true if no elements are out of order
 }
 
-int main() {
-    int arr[] = {1, 2, 3, 4, 5};
-    int n = 5;
-
-    printf("%s", isSorted(arr, n) ? "True" : "False");
-
-    return 0;
-}
-
 /*
 TIME COMPLEXITY: O(N), where N is the number of elements in the array.
 SPACE COMPLEXITY: O(1), as no extra space is used.
