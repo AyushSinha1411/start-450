@@ -27,16 +27,14 @@ void insertionSort(vector<int>& arr) {
     int n = arr.size(); // Get the size of the array
 
     // Iterate over each element in the array starting from the second element
-    for (int i = 1; i < n; ++i) {
-        int key = arr[i]; // Store the current element as key
-        int j = i - 1;
+    for (int i = 0; i < n-1; ++i) {
+        int j = i;
 
         // Move elements of arr[0..i-1], that are greater than key, to one position ahead of their current position
-        while (j >= 0 && arr[j] > key) {
-            arr[j + 1] = arr[j];
-            j = j - 1;
+        while (j > 0 && arr[j-1] > arr[j]) {
+            swap(arr[j - 1],arr[j]);
+            j--;
         }
-        arr[j + 1] = key; // Place the key at the correct position
     }
 }
 
