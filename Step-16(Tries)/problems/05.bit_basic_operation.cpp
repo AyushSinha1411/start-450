@@ -12,107 +12,126 @@ int setBitVal = sol.setBit(3, 2); // Sets the bit at position 3 after inserting 
 CODE:
 */
 
+// Class representing a node in the Trie
 class Node {
 public:
+    // Each node can have links to two other nodes: one for bit 0 and one for bit 1
     Node* link[2];
     
+    // Constructor to initialize the links to nullptr
     Node() {
         link[0] = link[1] = nullptr;
     }
 };
 
+// Class representing the Trie data structure
 class Trie {
 public:
-    Node* root;
+    Node* root; // Root node of the Trie
 
+    // Constructor to initialize the root node
     Trie() {
         root = new Node();
     }
 
-    // Insert integer into Trie as a binary representation
+    // Function to insert an integer into the Trie as its binary representation
     void insert(int m) {
-        Node* node = root;
+        Node* node = root; // Start from the root node
+        // Loop through each bit of the integer from the most significant bit (31) to the least significant bit (0)
         for (int i = 31; i >= 0; i--) {
-            int bit = (m >> i) & 1;
+            int bit = (m >> i) & 1; // Extract the i-th bit of the integer
+            // If the link for this bit doesn't exist, create a new node
             if (node->link[bit] == nullptr) {
                 node->link[bit] = new Node();
             }
-            node = node->link[bit];
+            node = node->link[bit]; // Move to the next node in the Trie
         }
     }
 
-    // Find the maximum XOR value with the given integer
+    // Function to find the maximum XOR value with the given integer
     int findXOR(int n) {
-        Node* node = root;
-        int ans = 0;
+        Node* node = root; // Start from the root node
+        int ans = 0; // Initialize the answer to 0
+        // Loop through each bit of the integer from the most significant bit (31) to the least significant bit (0)
         for (int i = 31; i >= 0; i--) {
-            int bit = (n >> i) & 1;
+            int bit = (n >> i) & 1; // Extract the i-th bit of the integer
+            // Try to move to the opposite bit (1 - bit) if possible to maximize the XOR
             if (node->link[1 - bit] != nullptr) {
-                ans |= (1 << i);
-                node = node->link[1 - bit];
+                ans |= (1 << i); // Set the i-th bit of the answer to 1
+                node = node->link[1 - bit]; // Move to the next node in the Trie
             } else {
-                node = node->link[bit];
+                node = node->link[bit]; // Move to the current bit node if the opposite bit doesn't exist
             }
         }
-        return ans;
+        return ans; // Return the maximum XOR value found
     }
 
-    // Get the bit value at a specific position
+    // Function to get the bit value at a specific position in the Trie
     int getBit(int a, int b) {
-        Node* node = root;
+        Node* node = root; // Start from the root node
+        // Loop through the bits until reaching the specified position 'a'
         for (int i = 31; i > a; i--) {
+            // Move to the next node based on the available link
             if (node->link[1]) {
                 node = node->link[1];
             } else {
                 node = node->link[0];
             }
         }
+        // Return 1 if the link for bit 1 exists, otherwise return 0
         return (node->link[1]) ? 1 : 0;
     }
 
-    // Set the bit value at a specific position
+    // Function to set the bit value at a specific position in the Trie
     int setBit(int a, int b) {
-        Node* node = root;
+        Node* node = root; // Start from the root node
+        // Loop through the bits until reaching the specified position 'a'
         for (int i = 31; i > a; i--) {
+            // Move to the next node based on the available link
             if (node->link[1]) {
                 node = node->link[1];
             } else {
                 node = node->link[0];
             }
         }
+        // If the link for bit 1 exists, return the original integer 'b'
         if (node->link[1]) {
             return b;
         } else {
+            // Otherwise, switch the link from bit 0 to bit 1
             Node* x = node->link[0];
             node->link[0] = nullptr;
             node->link[1] = x;
+            // Set the bit at position 'a' in 'b' to 1 and return the new integer
             return b | (1 << a);
         }
     }
 };
 
+// Class representing the solution using the Trie
 class Solution {
 public:
-    Trie t;
+    Trie t; // Create an instance of the Trie
 
-    // Function to get the maximum XOR with a given integer
+    // Function to get the maximum XOR with a given integer 'n' after inserting integer 'm' into the Trie
     int XOR(int n, int m) {
-        t.insert(m);
-        return t.findXOR(n);
+        t.insert(m); // Insert 'm' into the Trie
+        return t.findXOR(n); // Find and return the maximum XOR with 'n'
     }
 
-    // Function to check bit at a specific position
+    // Function to check the bit at a specific position 'a' in the integer 'b' inserted into the Trie
     int check(int a, int b) {
-        t.insert(b);
-        return t.getBit(a, b);
+        t.insert(b); // Insert 'b' into the Trie
+        return t.getBit(a, b); // Get and return the bit value at position 'a'
     }
 
-    // Function to set bit at a specific position
+    // Function to set the bit at a specific position 'c' in the integer 'd' inserted into the Trie
     int setBit(int c, int d) {
-        t.insert(d);
-        return t.setBit(c, d);
+        t.insert(d); // Insert 'd' into the Trie
+        return t.setBit(c, d); // Set and return the new integer with the bit at position 'c' set
     }
 };
+
 
 /*
 TIME COMPLEXITY:
