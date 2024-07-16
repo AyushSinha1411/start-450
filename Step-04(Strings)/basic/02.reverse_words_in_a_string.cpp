@@ -1,55 +1,72 @@
 /*
-QUESTION:
-Given a string s, reverse the order of characters in each word within a sentence while still preserving whitespace and initial word order.
+Question:
+Given a string, reverse the order of characters in each word within a sentence while still preserving whitespace and initial word order. Additionally, remove any leading, trailing, or extra spaces between words.
 
 Example:
-Input: "the sky is blue"
-Output: "blue is sky the"
+Input: "  The quick brown fox  "
+Output: "ehT kciuq nworb xof"
 
-APPROACH:
-1. Reverse the entire string to bring the words in the correct position but with reversed characters.
-2. Iterate through the string to reverse each word to correct their character order.
-3. Use two pointers, 'left' and 'right', to track the start and end of each word.
-4. Skip leading spaces and reverse each word in place.
-5. Append a single space after each word to maintain proper spacing.
-6. Resize the string to remove the trailing space.
-7. Return the modified string.
-
-CODE:
+Approach:
+1. Trim leading and trailing spaces.
+2. Use two pointers to identify the start and end of each word.
+3. Reverse the characters in each word in place.
+4. Reduce multiple spaces between words to a single space.
+5. Return the modified string.
 */
 
+#include <iostream>
 #include <string>
 #include <algorithm>
+
 using namespace std;
 
-string reverseWords(string s) {
-    // Reverse the entire string
-    reverse(s.begin(), s.end());
-    int n = s.size();
-    int left = 0, right = 0, i = 0;
-
-    while (i < n) {
-        // Skip leading spaces
-        while (i < n && s[i] == ' ') i++;
-        if (i == n) break; // Stop if end of string is reached
-        
-        // Mark the start of a word
-        if (left != 0) s[right++] = ' '; // Add a space before the next word
-        
-        int start = right; // Start index for the word
-        while (i < n && s[i] != ' ') {
-            s[right++] = s[i++];
-        }
-        
-        // Reverse the characters of the current word
-        reverse(s.begin() + start, s.begin() + right);
+void reverseWord(string &s, int start, int end) {
+    // Reverse the characters in the word from start to end
+    while (start < end) {
+        swap(s[start], s[end]);
+        start++;
+        end--;
     }
-    
-    s.resize(right); // Resize to remove trailing spaces if any
-    return s; // Return the modified string
 }
 
-/*
-TIME COMPLEXITY: O(n), where 'n' is the length of the input string. Each character is processed a constant number of times.
-SPACE COMPLEXITY: O(1), since the operations are performed in-place.
+string reverseWords(string s) {
+    int n = s.length();
+    int start = 0;
+
+    // Trim leading and trailing spaces
+    while (start < n && s[start] == ' ') start++;
+    int end = n - 1;
+    while (end >= 0 && s[end] == ' ') end--;
+
+    if (start > end) return ""; // If the entire string is spaces
+
+    // Reverse the characters in each word
+    int wordStart = start;
+    for (int i = start; i <= end; i++) {
+        if (s[i] == ' ' || i == end) {
+            int wordEnd = (s[i] == ' ') ? i - 1 : i;
+            reverseWord(s, wordStart, wordEnd);
+            wordStart = i + 1;
+        }
+    }
+
+    // Reduce multiple spaces between words to a single space
+    string result;
+    bool inSpace = false;
+    for (int i = start; i <= end; i++) {
+        if (s[i] == ' ') {
+            if (!inSpace) {
+                result += ' ';
+                inSpace = true;
+            }
+        } else {
+            result += s[i];
+            inSpace = false;
+        }
+    }
+
+    return result; // Return the final reversed string
+}
+/*Time Complexity: O(n), where n is the length of the input string.
+Space Complexity: O(1), as we are reversing the words in place without using extra space.
 */
