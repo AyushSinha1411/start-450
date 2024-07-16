@@ -1,51 +1,50 @@
 /*
-QUESTION:
-Given a string s, sort it in decreasing order based on the frequency of characters. If two characters have the same frequency, they can appear in any order.
+Question:
+Given a string `s`, sort it in decreasing order based on the frequency of characters. If two characters have the same frequency, they can appear in any order.
 
 Example:
 Input: "tree"
-Output: "eert" or "eetr" (both are valid as 'e' appears twice and 'r' and 't' appear once)
+Output: "eert" or "eetr"
 
-APPROACH:
-1. Use an unordered_map to count the frequency of each character in the string.
-2. Use a priority_queue (max-heap) to store characters and their frequencies in decreasing order of frequency.
-3. Populate the priority_queue with the frequency counts from the unordered_map.
-4. Construct the result string by repeatedly taking the most frequent character from the priority_queue and appending it to the result string.
-5. Return the result string.
+Approach:
+1. Use a hash map to count the frequency of each character in the string.
+2. Use a max heap (priority queue) to store the characters based on their frequency.
+3. Build the resulting string by repeatedly extracting the character with the highest frequency from the heap.
 
-CODE:
+Time Complexity: O(n log k), where n is the length of the string and k is the number of unique characters.
+Space Complexity: O(k), where k is the number of unique characters.
+
 */
-// Comparator function for the priority queue
-bool compare(const pair<char, int>& a, const pair<char, int>& b) {
-    return a.second < b.second; // Max-heap based on frequency
-}
+
+#include <iostream>
+#include <string>
+#include <unordered_map>
+#include <queue>
+#include <vector>
+
+using namespace std;
 
 string frequencySort(string s) {
-    // Priority queue (max-heap) to store characters by frequency
-    priority_queue<pair<char, int>, vector<pair<char, int>>, decltype(&compare)> pq(compare);
-
-    // Unordered_map to count frequency of each character
-    unordered_map<char, int> hm;
-
-    // Count frequency of each character in the string
+    // Step 1: Count the frequency of each character
+    unordered_map<char, int> frequencyMap;
     for (char c : s) {
-        hm[c]++;
+        frequencyMap[c]++;
     }
 
-    // Push each character and its frequency into the priority_queue
-    for (const auto& entry : hm) {
-        pq.push(make_pair(entry.first, entry.second));
+    // Step 2: Use a max heap to store characters by frequency
+    priority_queue<pair<int, char>> maxHeap;
+    for (const auto &entry : frequencyMap) {
+        maxHeap.push({entry.second, entry.first});
     }
 
-    // Construct the result string
-    string result = "";
-    while (!pq.empty()) {
-        pair<char, int> p = pq.top();
-        pq.pop();
-        result.append(p.second, p.first); // Append character 'p.first' 'p.second' times
+    // Step 3: Build the resulting string
+    string result;
+    while (!maxHeap.empty()) {
+        auto [freq, ch] = maxHeap.top();
+        maxHeap.pop();
+        result.append(freq, ch); // Append the character 'freq' times
     }
 
-    // Return the result string
     return result;
 }
 
