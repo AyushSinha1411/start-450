@@ -1,6 +1,8 @@
 /*
 QUESTION:
-Given a valid parentheses string S, consider its primitive decomposition: a primitive valid parentheses string is a non-empty string that cannot be decomposed into two or more non-empty valid parentheses strings. Your task is to remove the outermost parentheses of every primitive string in the primitive decomposition of S and return the resulting string.
+Given a valid parentheses string S, consider its primitive decomposition: a primitive valid parentheses string is a non-empty string that 
+cannot be decomposed into two or more non-empty valid parentheses strings. Your task is to remove the outermost parentheses of every primitive 
+string in the primitive decomposition of S and return the resulting string.
 
 Example:
 Input: "(()())(())"
