@@ -15,21 +15,14 @@ APPROACH:
 
 CODE:
 */
-
-#include <string>
-#include <unordered_map>
-#include <queue>
-#include <vector>
-using namespace std;
+// Comparator function for the priority queue
+bool compare(const pair<char, int>& a, const pair<char, int>& b) {
+    return a.second < b.second; // Max-heap based on frequency
+}
 
 string frequencySort(string s) {
-    // Lambda function for the comparison in priority_queue
-    auto cmp = [](const pair<char, int>& a, const pair<char, int>& b) {
-        return a.second < b.second; // Max-heap based on frequency
-    };
-
     // Priority queue (max-heap) to store characters by frequency
-    priority_queue<pair<char, int>, vector<pair<char, int>>, decltype(cmp)> pq(cmp);
+    priority_queue<pair<char, int>, vector<pair<char, int>>, decltype(&compare)> pq(compare);
 
     // Unordered_map to count frequency of each character
     unordered_map<char, int> hm;
