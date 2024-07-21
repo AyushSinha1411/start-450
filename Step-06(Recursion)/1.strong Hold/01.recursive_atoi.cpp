@@ -1,42 +1,47 @@
-/*
-QUESTION:
-Write a recursive function to convert a string of numeric characters to an integer (similar to the atoi function). The function should handle the base case of an empty string or a string containing non-numeric characters by returning 0.
+// Question: Implement the `myAtoi` function which converts a string to a 32-bit signed integer (similar to C/C++'s `atoi` function). The function should discard leading whitespaces, take an optional '+' or '-' sign, and stop at the first non-digit character. If the integer is out of the 32-bit signed integer range, clamp it to INT_MAX or INT_MIN.
 
-APPROACH:
-1. Check if the string contains any non-numeric characters. If so, return 0.
-2. Use recursion to convert the string to an integer. The base case is a single digit.
-3. For strings with more than one digit, recursively call the function for the first n-1 characters, multiply the result by 10, and add the last digit.
+class Solution {
+public:
+    int myAtoi(string s) {
+        int i = 0; // Initialize index to traverse the string
+        int sign = 1; // Initialize sign to positive
+        long ans = 0; // Initialize answer to 0
 
-CODE:
-*/
-
-#include <iostream>
-#include <cstring>
-#include <cctype>
-using namespace std;
-
-// Recursive function to compute atoi()
-int myAtoiRecursive(char* str, int n) {
-    // If str is NULL or str contains non-numeric characters then return 0 as the number is not valid
-    if (str == NULL) return 0;
-
-    // Check if the string contains any non-numeric characters
-    for (int i = 0; i < n; ++i) {
-        if (!isdigit(str[i])) {
-            return 0;
+        // Skip leading whitespace
+        while (i < s.length() && s[i] == ' ') {
+            i++;
         }
+
+        // Check for optional sign
+        if (i < s.length() && s[i] == '-') {
+            sign = -1; // Set sign to negative
+            i++;
+        } else if (i < s.length() && s[i] == '+') {
+            i++; // Sign is positive, just skip it
+        }
+
+        // Convert digits to integer
+        while (i < s.length()) {
+            // Check if current character is a digit
+            if (s[i] >= '0' && s[i] <= '9') {
+                ans = ans * 10 + (s[i] - '0'); // Add digit to answer
+
+                // Check for overflow
+                if (ans > INT_MAX && sign == -1) {
+                    return INT_MIN; // Return INT_MIN if overflow in negative
+                } else if (ans > INT_MAX && sign == 1) {
+                    return INT_MAX; // Return INT_MAX if overflow in positive
+                }
+
+                i++; // Move to next character
+            } else {
+                break; // Break if current character is not a digit
+            }
+        }
+
+        return ans * sign; // Return final result with sign
     }
+};
 
-    // Base case (Only one digit)
-    if (n == 1) {
-        return *str - '0';
-    }
-
-    // If more than 1 digits, recur for (n-1), multiply result with 10 and add last digit
-    return (10 * myAtoiRecursive(str, n - 1) + str[n - 1] - '0');
-}
-
-/*
-TIME COMPLEXITY: O(N), where N is the length of the string. This is because we traverse the string once to check for non-numeric characters and then recursively process each character.
-SPACE COMPLEXITY: O(N), due to the recursion stack for processing each character.
-*/
+// Time Complexity: O(n), where n is the length of the string. Each character is processed at most once.
+// Space Complexity: O(1), since only a fixed amount of extra space is used.
