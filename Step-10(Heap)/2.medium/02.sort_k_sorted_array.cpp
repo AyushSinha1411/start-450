@@ -1,52 +1,50 @@
-/*
-QUESTION:
-Given an array of size n, where every element is k positions away from its target position, sort the array in O(n log k) time.
+// Question: Nearly Sorted Array
+// Given an array of n elements, where each element is at most k positions away 
+// from its target position, sort the array.
 
-Example:
-Input: arr = [2, 6, 3, 12, 56, 8], k = 3
-Output: [2, 3, 6, 8, 12, 56]
+// Example:
+// Input: arr[] = {6, 5, 3, 2, 8, 10, 9}, k = 3
+// Output: arr[] = {2, 3, 5, 6, 8, 9, 10}
 
-APPROACH:
-1. Insert the first k+1 elements into a min-heap (priority_queue in C++).
-2. For the rest of the elements, remove the minimum element from the heap and insert the next element from the array.
-3. Continue this process until all elements are processed.
-4. Extract the remaining elements from the heap to get the sorted order.
+// Approach:
+// 1. Use a min-heap (priority queue) to keep track of the smallest elements.
+// 2. Push elements into the min-heap until its size is greater than k.
+// 3. Once the heap size exceeds k, pop the smallest element and push it to the result array.
+// 4. Continue this process until all elements are processed.
+// 5. Finally, pop all remaining elements from the heap and append them to the result array.
 
-CODE:
-*/
-
-#include <iostream>
-#include <queue>
 #include <vector>
+#include <queue>
 using namespace std;
 
-// Function to sort an array which is k positions away from its target position
-void sortK(int arr[], int n, int k) {
-    // Insert first k+1 items into a min-heap
-    int size = (n == k) ? k : k + 1;
-    priority_queue<int, vector<int>, greater<int>> pq(arr, arr + size);
+vector<int> nearlySorted(int arr[], int n, int k) {
+    // Initialize a min-heap (priority queue)
+    priority_queue<int, vector<int>, greater<int>> minh;
+    
+    // Vector to store the sorted result
+    vector<int> ans;
 
-    // i is index for remaining elements in arr[] and index is target index for the current minimum element in the min-heap 'pq'.
-    int index = 0;
-    for (int i = k + 1; i < n; i++) {
-        arr[index++] = pq.top();
-        pq.pop();
-        pq.push(arr[i]);
+    // Iterate through the array
+    for (int i = 0; i < n; i++) {
+        // Push the current element into the min-heap
+        minh.push(arr[i]);
+
+        // If the heap size exceeds k, pop the smallest element and push it to the result
+        if (minh.size() > k) {
+            ans.push_back(minh.top());
+            minh.pop();
+        }
     }
 
-    // Extract the remaining elements from the min-heap and put them back in the array
-    while (!pq.empty()) {
-        arr[index++] = pq.top();
-        pq.pop();
+    // Pop and add remaining elements from the heap to the result
+    while (minh.size() > 0) {
+        ans.push_back(minh.top());
+        minh.pop();
     }
+
+    // Return the sorted array
+    return ans;
 }
 
-/*
-TIME COMPLEXITY:
-- O(n log k), where n is the number of elements in the array and k is the maximum distance an element is from its target position.
-  - Inserting the first k+1 elements into the min-heap takes O(k log k) time.
-  - For the remaining elements, each insert and extract operation takes O(log k) time, which is done n-k times.
-
-SPACE COMPLEXITY:
-- O(k), as the priority_queue stores k+1 elements.
-*/
+// Time Complexity: O(n log k)
+// Space Complexity: O(k)
