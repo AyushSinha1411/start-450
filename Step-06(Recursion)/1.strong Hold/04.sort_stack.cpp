@@ -12,45 +12,43 @@ APPROACH:
 2. Remove the top element of the stack and sort the remaining elements.
 3. Use an auxiliary stack to temporarily hold elements while inserting the removed element back in the correct position.
 4. Move the elements from the auxiliary stack back to the main stack.
-
-CODE:
 */
-
-#include <iostream>
-#include <stack>
+#include <bits/stdc++.h>
 using namespace std;
 
-// Function to sort a stack
-void sortStack(stack<int> &s) {
-    // If the stack is empty, return
-    if (s.empty())
+// Function to insert an element in a sorted way
+void sortedInsert(stack<int>& s, int element) {
+    // Base case: If the stack is empty or the top element is smaller than the current element
+    if (s.empty() || element > s.top()) {
+        s.push(element);
         return;
-     
-    // Remove the top element of the stack
-    int x = s.top();
+    }
+
+    // Recursively pop elements until the correct position is found
+    int temp = s.top();
     s.pop();
-     
-    // Sort the remaining elements in the stack using recursion
-    sortStack(s);
-     
-    // Create an auxiliary stack
-    stack<int> tempStack;
-     
-    // Move all elements that are greater than x from the main stack to the tempStack
-    while (!s.empty() && s.top() > x) {
-        tempStack.push(s.top());
-        s.pop();
-    }
-     
-    // Push x back into the main stack
-    s.push(x);
-     
-    // Move all elements from tempStack back to the main stack
-    while (!tempStack.empty()) {
-        s.push(tempStack.top());
-        tempStack.pop();
-    }
+    sortedInsert(s, element);
+
+    // Push the popped element back onto the stack
+    s.push(temp);
 }
+
+// Function to sort the stack
+void sortStack(stack<int>& s) {
+    // Base case: If the stack is empty
+    if (s.empty()) {
+        return;
+    }
+
+    // Remove the top element
+    int element = s.top();
+    s.pop();
+
+    // Recursively sort the remaining stack
+    sortStack(s);
+
+    // Insert the top element back in the sorted stack
+    sortedInsert(s,element);}
 
 /*
 TIME COMPLEXITY: O(N^2), where N is the number of elements in the stack. This is because for each element, we might need to move elements back and forth between the two stacks.
