@@ -21,31 +21,37 @@ APPROACH:
 CODE:
 */
 
-#include <vector>
-using namespace std;
+  int longestOnes(vector<int>& nums, int k) {
+         int left = 0;   // Left pointer for the sliding window
+    int right = 0;  // Right pointer for the sliding window
+    int zeros = 0;  // Count of zeros in the current window
+    int maxLen = 0; // Maximum length of the subarray with at most k zeros
 
-// Function to find the longest subarray containing only 1s with at most k flips
-int longestOnes(vector<int>& nums, int k) {
-    int left = 0, right;
-    int n = nums.size();
-
-    for (right = 0; right < n; right++) {
-        // If we included a zero in the window, reduce the value of k
+    // Iterate over the array with the right pointer
+    while (right < nums.size()) {
+        // If the current element is zero, increment the zeros count
         if (nums[right] == 0) {
-            k--;
+            zeros++;
         }
 
-        // If k becomes negative, increment the left pointer to keep the window size same
-        if (k < 0) {
-            // If the left element to be thrown out is zero, increase k
-            k += 1 - nums[left];
+        // If the count of zeros exceeds k, move the left pointer to maintain the condition
+        if (zeros > k) {
+            if (nums[left] == 0) {
+                zeros--;
+            }
             left++;
         }
+
+        // Update the maximum length of the subarray
+        if(zeros<=k)
+        maxLen = max(maxLen, right - left + 1);
+        
+        // Move the right pointer to the next element
+        right++;
     }
 
-    // The length of the longest window
-    return right - left;
-}
+    return maxLen;
+    }
 
 /*
 TIME COMPLEXITY: O(N), where N is the length of the array. This is because each element is visited at most twice (once by the right pointer and once by the left pointer).
