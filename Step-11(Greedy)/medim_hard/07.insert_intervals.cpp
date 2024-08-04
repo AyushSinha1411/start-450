@@ -23,22 +23,33 @@ CODE:
 using namespace std;
 
 vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {
-    intervals.push_back(newInterval); // Add the new interval
-    sort(intervals.begin(), intervals.end()); // Sort intervals by start times
+    vector<vector<int>> res; // Resultant list of intervals
+    int i = 0; // Index for iterating through intervals
+    int n = intervals.size(); // Number of intervals
 
-    vector<vector<int>> ans; // Resultant merged intervals
-    for (const auto& interval : intervals) {
-        // If the result is empty or the current interval does not overlap with the last interval
-        if (ans.empty() || interval[0] > ans.back()[1]) {
-            ans.push_back(interval); // Add the current interval
-        } else {
-            // Merge the current interval with the last interval in the result
-            ans.back()[1] = max(ans.back()[1], interval[1]);
-        }
+    // Add all intervals that come before the new interval
+    while (i < n && intervals[i][1] < newInterval[0]) {
+        res.push_back(intervals[i]);
+        i++;
     }
-    return ans; // Return the merged intervals
-}
 
+    // Merge overlapping intervals
+    while (i < n && intervals[i][0] <= newInterval[1]) {
+        newInterval[0] = min(newInterval[0], intervals[i][0]);
+        newInterval[1] = max(newInterval[1], intervals[i][1]);
+        i++;
+    }
+    // Add the merged interval
+    res.push_back(newInterval);
+
+    // Add all intervals that come after the new interval
+    while (i < n) {
+        res.push_back(intervals[i]);
+        i++;
+    }
+
+    return res;
+}
 /*
 TIME COMPLEXITY:
 - O(n log n) for sorting the intervals.
