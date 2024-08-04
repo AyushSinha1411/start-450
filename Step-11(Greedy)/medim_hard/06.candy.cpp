@@ -22,32 +22,47 @@ CODE:
 #include <algorithm>
 using namespace std;
 
-int candy(vector<int>& ratings) {
-    int n = ratings.size();
-    vector<int> candies(n, 1); // Initialize all children with one candy
+ int candy(vector<int>& ratings) {
+         int n = ratings.size();
+    if (n == 0) return 0;
 
-    // Traverse from left to right
-    for (int i = 1; i < n; ++i) {
-        if (ratings[i] > ratings[i - 1]) {
-            candies[i] = candies[i - 1] + 1; // Give more candies to child with higher rating
+    int sum = 1; // Initialize sum with 1 candy for the first child
+    int i = 1; // Start from the second child
+
+    // Traverse through the ratings array
+    while (i < n) {
+        // If the current rating is equal to the previous rating, give 1 candy
+        if (ratings[i] == ratings[i - 1]) {
+            sum += 1;
+            i++;
+            continue;
+        }
+
+        int peak = 1; // Initialize peak to 1
+
+        // Traverse up slope (increasing ratings)
+        while (i < n && ratings[i] > ratings[i - 1]) {
+            peak++;
+            sum += peak;
+            i++;
+        }
+
+        // Traverse down slope (decreasing ratings)
+        int down = 0; // Initialize down to 0 because we already counted the peak
+        while (i < n && ratings[i] < ratings[i - 1]) {
+            down++;
+            sum += down;
+            i++;
+        }
+
+        // Adjust the sum if the down slope length is greater than or equal to the peak
+        if (down >= peak) {
+            sum += down - peak + 1;
         }
     }
 
-    // Traverse from right to left
-    for (int i = n - 2; i >= 0; --i) {
-        if (ratings[i] > ratings[i + 1]) {
-            candies[i] = max(candies[i], candies[i + 1] + 1); // Update candies for child with higher rating
-        }
+    return sum; // Return the total number of candies
     }
-
-    // Calculate total candies needed
-    int totalCandies = 0;
-    for (int candy : candies) {
-        totalCandies += candy;
-    }
-
-    return totalCandies;
-}
 
 /*
 TIME COMPLEXITY:
