@@ -1,45 +1,45 @@
-/*
-Question:
-Given a string s, find the length of the longest substring without repeating characters.
+// Question: Given a string s, find the length of the longest substring without repeating characters.
+// Example: 
+// Input: "abcabcbb"
+// Output: 3
+// Explanation: The answer is "abc", with the length of 3.
+// Approach:
+// We use the sliding window technique with two pointers (left and right) and a hash array to keep track of the last seen index of each character. 
+// We move the right pointer to expand the window and update the left pointer when a repeating character is found to ensure all characters in the current window are unique.
 
-Approach:
-- We can use a sliding window approach to solve this problem.
-- We maintain a window that contains only unique characters.
-- We use a hash map to store the frequency of characters in the current window.
-- We iterate through the string and expand the window by adding one character at a time.
-- If we encounter a repeating character, we shrink the window from the left until the character is no longer in the window.
-- We keep track of the maximum window size encountered so far and return it as the result.
+#include <string>
+#include <algorithm>
+#include <cstring>
+using namespace std;
 
-Example:
-Input: s = "abcabcbb"
-Output: 3
-Explanation: The answer is "abc", with the length of 3.
+int lengthOfLongestSubstring(string s) {
+    int n = s.length();   // Length of the input string
+    int maxlen = 0;       // Maximum length of the substring without repeating characters
+    int l = 0, r = 0;     // Left and right pointers for the sliding window
 
-CODE:-
-*/
+    int hash[255];        // Hash array to keep track of the last seen index of each character
+    memset(hash, -1, sizeof(hash)); // Initialize the hash array to -1
 
-int lengthOfLongestSubstring(const string& s) {
-    int ans = 0;
-    unordered_map<char, int> mp;
-    int start = 0;
-    
-    for (int i = 0; i < s.size(); i++) {
-        mp[s[i]]++;
-        
-        while (mp.size() < i - start + 1) {
-            mp[s[start]]--;
-            if (mp[s[start]] == 0)
-                mp.erase(s[start]);
-            start++;
+    // Iterate over the string with the right pointer
+    while (r < n) {
+        // If the character at the right pointer has been seen before 
+        // and is within the current window (l to r)
+        if (hash[s[r]] != -1 && hash[s[r]] >= l) {
+            // Move the left pointer to one position right of the last seen index
+            l = hash[s[r]] + 1;
         }
-        
-        if (mp.size() == i - start + 1)
-            ans = max(ans, i - start + 1);
-    }
-    
-    return ans;
-}
 
-// Complexity Analysis:
-// - The time complexity of this algorithm is O(N), where N is the length of the input string `s`. We iterate through each character of the string once.
-// - The space complexity is O(M), where M is the number of unique characters in the string `s`. The unordered map `mp` can store up to M key-value pairs.
+        // Update the last seen index of the character at the right pointer
+        hash[s[r]] = r;
+        
+        // Update the maximum length of the substring
+        maxlen = max(maxlen, r - l + 1);
+        
+        // Move the right pointer to the next character
+        r++;
+    }
+
+    return maxlen; // Return the maximum length of the substring without repeating characters
+}
+// Time Complexity: O(n), where n is the length of the string. Each character is visited at most twice.
+// Space Complexity: O(1), since the hash array size is constant.
