@@ -20,26 +20,28 @@ CODE:
 #include <algorithm>
 using namespace std;
 
+// Function to find the minimum number of jumps to reach the end of the array
 int jump(vector<int>& nums) {
-    // Initialize the number of jumps, the current end of the range, and the farthest reachable index.
-    int answer = 0, n = int(nums.size());
-    int curEnd = 0, curFar = 0;
+    int n = nums.size(); // Length of the input array
+    if (n <= 1) return 0; // No jumps needed if the array has 1 or fewer elements
 
-    // Iterate through the array, excluding the last index because we do not need to jump from there.
-    for (int i = 0; i < n - 1; ++i) {
-        // Update the farthest reachable index of this jump.
-        curFar = max(curFar, i + nums[i]);
+    int jumps = 0; // Number of jumps
+    int l = 0; // Left pointer for the current range
+    int r = 0; // Right pointer for the current range
 
-        // If we reach the end of the current range,
-        // increment the jump count and update the current end to the farthest reachable index.
-        if (i == curEnd) {
-            answer++;
-            curEnd = curFar;
+    // While the right pointer has not reached the end of the array
+    while (r < n - 1) {
+        int farthest = 0; // Farthest point that can be reached in the current range
+        // Iterate through the current range to find the farthest point
+        for (int i = l; i <= r; i++) {
+            farthest = max(farthest, i + nums[i]);
         }
+        l = r + 1; // Move the left pointer to the right of the current range
+        r = farthest; // Move the right pointer to the farthest point
+        jumps++; // Increment the number of jumps
     }
 
-    // Return the total number of jumps needed to reach the last index.
-    return answer;
+    return jumps; // Return the number of jumps
 }
 
 /*
