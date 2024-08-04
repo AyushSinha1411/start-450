@@ -16,43 +16,40 @@ APPROACH:
 CODE:
 */
 
-#include <vector>
-#include <algorithm>
-using namespace std;
-
-static bool pairCompare(const pair<pair<int, int>, int> &a,
-                        const pair<pair<int, int>, int> &b) {
-    if (a.first.second != b.first.second) {
-        return a.first.second < b.first.second;
+ static bool comparator(struct Meeting m1, struct Meeting m2) {
+           return (m1.end < m2.end) ;
+         
+     
     }
-    return a.second < b.second;
-}
-
-// Function to find the maximum number of meetings that can be performed in a meeting room.
-int maxMeetings(int start[], int end[], int n) {
-    vector<pair<pair<int, int>, int>> x;
-
-    // Pushing the pair of starting and finish time and their index as pair in another list.
-    for (int i = 0; i < n; i++) {
-        x.push_back({{start[i], end[i]}, i + 1});
-    }
-
-    // Sorting the list.
-    sort(x.begin(), x.end(), pairCompare);
-    int last = -1;
-    int res = 0;
-
-    for (int i = 0; i < n; i++) {
-        // If the start time of this meeting is greater than or equal to the finish time of previously selected meeting,
-        // then we increment the counter and update last.
-        if (x[i].first.first > last) {
-            res++;
-            last = x[i].first.second;
+     int maxMeetings(int n, int start[], int end[]) {
+        struct Meeting meet[n];
+        for (int i = 0; i < n; i++) {
+            meet[i].start = start[i];
+            meet[i].end = end[i];
+            meet[i].pos = i + 1;
         }
+
+        // Sorting meetings based on the comparator
+        sort(meet, meet + n, comparator);
+
+        int answer=1;
+
+        // The first meeting always gets selected
+        int limit = meet[0].end;
+  
+
+        // Iterating through the remaining meetings
+        for (int i = 1; i < n; i++) {
+            if (meet[i].start > limit) {
+                limit = meet[i].end;
+                answer++;
+            }
+        }
+
+
+        // Return the number of meetings that can be performed
+        return answer;
     }
-    // Returning the counter.
-    return res;
-}
 
 /*
 
