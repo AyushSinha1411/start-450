@@ -1,62 +1,48 @@
-/*
-QUESTION:
-Write a function to find the number of non-empty subarrays with a sum equal to a given goal in the binary array nums.
-
-Example:
-Input: nums = [1,0,1,0,1], goal = 2
-Output: 4
-Explanation:
-The subarrays with a sum equal to 2 are [1,0,1], [0,1,0,1], [1,0,1], and [1,0,1].
-
-APPROACH:
-1. Use a sliding window to maintain the current sum of elements in the window.
-2. Initialize pointers, start and end, to define the window.
-3. Iterate through the array with the end pointer, adding elements to the current sum.
-4. If the current sum exceeds the goal, slide the start pointer to the right while adjusting the current sum.
-5. Use a variable, prefixZeros, to count the number of leading zeros in the current window, which contribute to subarrays with the same sum.
-6. Whenever the current sum matches the goal, increment the total count of subarrays by 1 plus the number of prefix zeros.
-7. Return the total count of subarrays that meet the goal.
-
-CODE:
-*/
+// Question: Given a binary array nums and an integer goal, return the number of non-empty subarrays with a sum equal to goal.
+// Example:
+// Input: nums = [1,0,1,0,1], goal = 2
+// Output: 4
+// Explanation: The 4 subarrays are [1,0,1], [0,1,0], [1,0,1,0], and [0,1,0].
+// Approach:
+// We use a helper function 'lessequaltok' to find the number of subarrays with a sum less than or equal to a given value.
+// The main function uses this helper to find the number of subarrays with a sum equal to the goal by calculating the difference between the number of subarrays with sum less than or equal to goal and the number of subarrays with sum less than or equal to goal-1.
+// Time Complexity: O(n), where n is the length of the array. Each element is visited at most twice.
+// Space Complexity: O(1), since we are using a fixed number of extra variables.
 
 #include <vector>
 using namespace std;
 
-// Function to find the number of non-empty subarrays with sum equal to the given goal
-int numSubarraysWithSum(vector<int>& nums, int goal) {
-    int start = 0;
-    int prefixZeros = 0;
-    int currentSum = 0;
-    int totalCount = 0;
+// Helper function to find the number of subarrays with sum less than or equal to a given value
+int lessequaltok(vector<int>& nums, int goal) {
+    // If the goal is negative, there are no valid subarrays
+    if (goal < 0)
+        return 0;
 
-    // Loop through the array using end pointer
-    for (int end = 0; end < nums.size(); ++end) {
-        // Add current element to the sum
-        currentSum += nums[end];
+    int l = 0;   // Left pointer for the sliding window
+    int r = 0;   // Right pointer for the sliding window
+    int ans = 0; // Count of subarrays with sum less than or equal to goal
+    int n = nums.size(); // Length of the input array
+    int sum = 0; // Current sum of the sliding window
 
-        // Slide the window while condition is met
-        while (start < end && (nums[start] == 0 || currentSum > goal)) {
-            if (nums[start] == 1) {
-                prefixZeros = 0;
-            } else {
-                prefixZeros += 1;
-            }
+    // Iterate over the array with the right pointer
+    while (r < n) {
+        sum += nums[r]; // Add the current element to the sum
 
-            currentSum -= nums[start];
-            start += 1;
+        // While the sum exceeds the goal, move the left pointer
+        while (sum > goal) {
+            sum -= nums[l]; // Subtract the element at the left pointer from the sum
+            l++; // Move the left pointer to the right
         }
 
-        // Count subarrays when window sum matches the goal
-        if (currentSum == goal) {
-            totalCount += 1 + prefixZeros;
-        }
+        // Count the number of valid subarrays ending at the current position
+        ans += (r - l + 1);
+        r++; // Move the right pointer to the next element
     }
 
-    return totalCount;
+    return ans; // Return the count of subarrays with sum less than or equal to goal
 }
 
-/*
-TIME COMPLEXITY: O(N), where N is the length of the array. This is because each element is visited at most twice (once by the end pointer and once by the start pointer).
-SPACE COMPLEXITY: O(1), as we are using only a few extra variables for calculations.
-*/
+// Main function to find the number of subarrays with sum equal to goal
+int numSubarraysWithSum(vector<int>& nums, int goal) {
+    return lessequaltok(nums, goal) - lessequaltok(nums, goal - 1);
+}
