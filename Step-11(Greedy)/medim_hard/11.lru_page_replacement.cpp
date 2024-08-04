@@ -30,47 +30,36 @@ CODE:
 #include <unordered_map>
 using namespace std;
 
-int pageFaults(int N, int C, int pages[]) {
-    unordered_set<int> s; // Set to store the currently loaded pages
-    unordered_map<int, int> indexes; // Map to store the index of each page
-    int page_faults = 0; // Variable to store the number of page faults
+ unordered_map<int, list<int>::iterator> pageMap; // Map to store page references
+    list<int> pageList; // List to store pages for LRU
+    int pageFaults = 0; // Variable to count page faults
 
-    // Loop through all the pages
     for (int i = 0; i < N; i++) {
-        // Check if there is still space in memory
-        if (s.size() < C) {
-            // Check if the page is already in memory
-            if (s.find(pages[i]) == s.end()) {
-                // If not, add the page to memory and increment page_faults
-                s.insert(pages[i]);
-                page_faults++;
+        int page = pages[i];
+
+        // If the page is not in the cache
+        if (pageMap.find(page) == pageMap.end()) {
+            // If the cache is full, remove the least recently used page
+            if (pageList.size() == C) {
+                int last = pageList.back();
+                pageList.pop_back();
+                pageMap.erase(last);
             }
-            // Store the current index of the page
-            indexes[pages[i]] = i;
-        }
-        // If memory is full
-        else {
-            // Check if the page is already in memory
-            if (s.find(pages[i]) == s.end()) {
-                // Find the least recently used (LRU) page
-                int lru = INT_MAX, val;
-                for (auto it = s.begin(); it != s.end(); it++) {
-                    if (indexes[*it] < lru) {
-                        lru = indexes[*it];
-                        val = *it;
-                    }
-                }
-                // Remove the LRU page and add the current page
-                s.erase(val);
-                s.insert(pages[i]);
-                page_faults++;
-            }
-            // Update the index of the current page
-            indexes[pages[i]] = i;
+            // Insert the new page at the front of the list and update the map
+            pageList.push_front(page);
+            pageMap[page] = pageList.begin();
+
+            // Increment the page fault counter
+            pageFaults++;
+        } else {
+            // If the page is already in the cache, move it to the front
+            pageList.erase(pageMap[page]);
+            pageList.push_front(page);
+            pageMap[page] = pageList.begin();
         }
     }
-    // Return the total number of page faults
-    return page_faults;
+
+    return pageFaults; // Return the total number of page faults
 }
 
 /*
