@@ -1,65 +1,66 @@
-/*
-QUESTION:
-Write a function to find the minimum window substring in string s that contains all the characters in string t. If there is no such substring, return the empty string.
-
-Example:
-Input: s = "ADOBECODEBANC", t = "ABC"
-Output: "BANC"
-Explanation: The minimum window substring is "BANC" which contains all characters 'A', 'B', and 'C' from string t.
-
-APPROACH:
-1. Use the sliding window technique to maintain a window that contains all characters of t.
-2. Use a vector to keep track of the frequency of each character in t.
-3. Initialize two pointers, start and i, to define the window.
-4. Iterate through the string s with the i pointer.
-5. Decrease the count of the current character in the frequency vector and decrement the required count if the character is needed.
-6. If the required count is zero, update the minimum window length and adjust the start pointer to find the smallest window.
-7. Return the minimum window substring.
-
-CODE:
-*/
+// Question: Given two strings s and t, return the minimum window substring of s such that every character in t (including duplicates) is included in the window. If there is no such substring, return the empty string "".
+// Example:
+// Input: s = "ADOBECODEBANC", t = "ABC"
+// Output: "BANC"
+// Explanation: The minimum window substring is "BANC".
+// Approach:
+// We use the sliding window technique and a hashmap to keep track of the count of characters in t. 
+// We expand the window by moving the right pointer, and when we have all the characters of t in the current window, 
+// we move the left pointer to minimize the window size. The minimum length of the valid window is updated during the process.
+// Time Complexity: O(n), where n is the length of the string s. Each character is visited at most twice.
+// Space Complexity: O(1), since the size of the hashmap is constant.
 
 #include <string>
 #include <vector>
 #include <climits>
 using namespace std;
 
-// Function to find the minimum window substring containing all characters of t
 string minWindow(string s, string t) {
-    if (s.size() == 0 || t.size() == 0) return "";
-    
-    vector<int> remaining(128, 0);
-    int required = t.size();
-    
-    // Initialize the frequency vector with characters in t
-    for (int i = 0; i < required; i++) remaining[t[i]]++;
-    
-    int minLen = INT_MAX, start = 0, left = 0, i = 0;
-    
-    while (i <= s.size() && start < s.size()) {
-        // Expand the window by moving the right pointer
-        if (required) {
-            if (i == s.size()) break;
-            remaining[s[i]]--;
-            if (remaining[s[i]] >= 0) required--;
-            i++;
-        } 
-        // Contract the window by moving the left pointer
-        else {
-            if (i - start < minLen) {
-                minLen = i - start;
-                left = start;
-            }
-            remaining[s[start]]++;
-            if (remaining[s[start]] > 0) required++;
-            start++;
-        }
+    // Edge case: if either string is empty
+    if (s.empty() || t.empty()) {
+        return "";
     }
-    
-    return minLen == INT_MAX ? "" : s.substr(left, minLen);
-}
 
-/*
-TIME COMPLEXITY: O(N), where N is the length of the string s. This is because each character is visited at most twice (once by the i pointer and once by the start pointer).
-SPACE COMPLEXITY: O(1), since the vector has a fixed size of 128 (for ASCII characters).
-*/
+    vector<int> hash(256, 0); // Hashmap to count characters in t
+    int left = 0, right = 0;  // Left and right pointers for the sliding window
+    int minLen = INT_MAX;     // Minimum length of the valid window
+    int startIdx = -1;        // Starting index of the minimum window substring
+    int count = 0;            // Count of characters from t in the current window
+    int n = s.size();         // Length of string s
+    int m = t.size();         // Length of string t
+
+    // Initialize the hashmap with the count of characters in t
+    for (int i = 0; i < m; i++) {
+        hash[t[i]]++;
+    }
+
+    // Iterate over the string with the right pointer
+    while (right < n) {
+        // If the current character is in t, increment the count
+        if (hash[s[right]] > 0) {
+            count++;
+        }
+        // Decrement the count of the current character in the hashmap
+        hash[s[right]]--;
+
+        // When we have all characters of t in the current window
+        while (count == m) {
+            // Update the minimum length of the window
+            if (right - left + 1 < minLen) {
+                minLen = right - left + 1;
+                startIdx = left;
+            }
+
+            // Move the left pointer to minimize the window size
+            hash[s[left]]++;
+            if (hash[s[left]] > 0) {
+                count--;
+            }
+            left++;
+        }
+        right++;
+    }
+
+    // Return the minimum window substring or an empty string if not found
+    return startIdx == -1 ? "" : s.substr(startIdx, minLen);
+}
