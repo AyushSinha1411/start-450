@@ -18,37 +18,31 @@ APPROACH:
 CODE:
 */
 
-#include <vector>
-#include <algorithm>
-using namespace std;
-
-// Comparator function to sort intervals by their end times
-bool compareSecondElement(const vector<int>& a, const vector<int>& b) {
-    return a[1] < b[1];
-}
-
-int eraseOverlapIntervals(vector<vector<int>>& intervals) {
-    // Sort the intervals by their end times
-    sort(intervals.begin(), intervals.end(), compareSecondElement);
-    int ans = 0;
-    int k = INT_MIN;
-
-    for (int i = 0; i < intervals.size(); i++) {
-        int x = intervals[i][0];
-        int y = intervals[i][1];
-
-        if (x >= k) {
-            // If the start time of the current interval is greater than or equal to k, update k to the end time of the current interval
-            k = y;
-        } else {
-            // If the start time of the current interval is less than k, increment the count of intervals to be removed
-            ans++;
-        }
+    static bool compare(vector<int>& a, vector<int>& b) {
+        return a[1] < b[1];
     }
 
-    return ans; // Return the count of removed intervals
-}
+    int eraseOverlapIntervals(vector<vector<int>>& intervals) {
+        if (intervals.empty()) return 0;
 
+        // Sort intervals based on their end times
+        sort(intervals.begin(), intervals.end(), compare);
+
+        int n = intervals.size();
+        int lastEndTime = intervals[0][1]; // End time of the last added interval
+        int count = 1; // Count of non-overlapping intervals
+
+        // Iterate through the intervals starting from the second interval
+        for (int i = 1; i < n; i++) {
+            if (intervals[i][0] >= lastEndTime) {
+                count++;
+                lastEndTime = intervals[i][1];
+            }
+        }
+
+        // The minimum number of intervals to remove is the total number of intervals minus the count of non-overlapping intervals
+        return n - count;
+    }
 /*
 TIME COMPLEXITY:
 - O(n log n) for sorting the intervals.
