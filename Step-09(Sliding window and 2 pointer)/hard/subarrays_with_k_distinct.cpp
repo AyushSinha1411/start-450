@@ -1,74 +1,48 @@
-/*
-QUESTION:
-Write a function to find the number of subarrays with exactly k distinct integers in the given array nums.
-
-Example:
-Input: nums = [1,2,1,2,3], k = 2
-Output: 7
-Explanation:
-The subarrays with exactly 2 distinct integers are:
-[1,2], [2,1], [1,2], [2,1,2], [1,2,3], [2,1,2,3], [1,2]
-
-APPROACH:
-1. Use a sliding window technique to maintain a window with at most k distinct integers.
-2. Initialize two pointers, i and j, to define the window.
-3. Use a map to keep track of the frequency of each integer in the current window.
-4. Iterate through the array with the j pointer.
-5. Add the current element to the frequency map and update the count of distinct integers.
-6. If the count of distinct integers exceeds k, move the i pointer to the right until the count of distinct integers is at most k.
-7. Use a variable, prefixSum, to count the number of valid subarrays ending at j.
-8. Whenever the count of distinct integers is exactly k, add the prefixSum to the result.
-9. Return the total count of valid subarrays.
-
-CODE:
-*/
+// Question: Given an array of integers nums and an integer k, return the number of subarrays that contain exactly k distinct integers.
+// Example:
+// Input: nums = [1, 2, 1, 2, 3], k = 2
+// Output: 7
+// Explanation: The subarrays with exactly 2 distinct integers are [1, 2], [2, 1], [1, 2], [2, 3], [1, 2, 1], [2, 1, 2], and [1, 2, 3].
+// Approach:
+// We use a helper function to count the number of subarrays with at most k distinct integers. 
+// The main function uses this helper to find the number of subarrays with exactly k distinct integers by calculating the difference 
+// between the number of subarrays with at most k distinct integers and the number of subarrays with at most k-1 distinct integers.
+// Time Complexity: O(n), where n is the length of the array. Each element is visited at most twice.
+// Space Complexity: O(k), for storing at most k distinct integers in the hashmap.
 
 #include <vector>
-#include <unordered_map>
+#include <map>
 using namespace std;
 
-// Function to find the number of subarrays with exactly k distinct integers
-int subarraysWithKDistinct(vector<int>& nums, int k) {
-    int n = nums.size();
-    int i = 0, j = 0;
-    unordered_map<int, int> counter;
-    int distinctCount = 0;
-    int ans = 0;
-    int prefixSum = 0;
+// Helper function to count the number of subarrays with at most k distinct integers
+int helper(vector<int>& nums, int k) {
+    int left = 0;  // Left pointer for the sliding window
+    int right = 0; // Right pointer for the sliding window
+    map<int, int> count; // Hashmap to keep track of the frequency of each integer
+    int subarrayCount = 0; // Count of subarrays with at most k distinct integers
 
-    for (int j = 0; j < n; j++) {
-        if (counter[nums[j]] == 0) {
-            distinctCount++;
-        }
-        counter[nums[j]]++;
+    // Iterate over the array with the right pointer
+    while (right < nums.size()) {
+        count[nums[right]]++; // Increment the frequency of the current integer
 
-        // If the count of distinct integers exceeds k, move the i pointer to the right
-        while (distinctCount > k) {
-            counter[nums[i]]--;
-            if (counter[nums[i]] == 0) {
-                distinctCount--;
+        // If the number of distinct integers exceeds k, move the left pointer
+        while (count.size() > k) {
+            count[nums[left]]--; // Decrement the frequency of the integer at the left pointer
+            if (count[nums[left]] == 0) {
+                count.erase(nums[left]); // Remove the integer if its frequency becomes 0
             }
-            i++;
-            prefixSum = 0;
+            left++; // Move the left pointer to the right
         }
 
-        // Move the i pointer to the right while there are duplicate integers
-        while (counter[nums[i]] > 1) {
-            counter[nums[i]]--;
-            i++;
-            prefixSum++;
-        }
-
-        // If the count of distinct integers is exactly k, add the prefixSum to the result
-        if (distinctCount == k) {
-            ans += prefixSum + 1;
-        }
+        // Count the number of valid subarrays ending at the current position
+        subarrayCount += right - left + 1;
+        right++; // Move the right pointer to the next integer
     }
 
-    return ans;
+    return subarrayCount; // Return the count of subarrays with at most k distinct integers
 }
 
-/*
-TIME COMPLEXITY: O(N), where N is the length of the array. This is because each element is visited at most twice (once by the j pointer and once by the i pointer).
-SPACE COMPLEXITY: O(K), since the map can hold at most k distinct integers.
-*/
+// Main function to count the number of subarrays with exactly k distinct integers
+int subarraysWithKDistinct(vector<int>& nums, int k) {
+    return helper(nums, k) - helper(nums, k - 1);
+}
