@@ -1,77 +1,50 @@
-/*
-QUESTION:
-Given a string containing only three types of characters: '(', ')' and '*', write a function to check whether this string is valid. We define the validity of a string as follows:
-1. Any left parenthesis '(' must have a corresponding right parenthesis ')'.
-2. Any right parenthesis ')' must have a corresponding left parenthesis '('.
-3. Left parenthesis '(' must go before the corresponding right parenthesis ')'.
-4. '*' could be treated as a single right parenthesis ')' or a single left parenthesis '(' or an empty string.
-An empty string is also valid.
+// Question: Given a string s containing only three types of characters: '(', ')' and '*', return true if s is valid.
+// The string is valid if:
+// 1. Any left parenthesis '(' must have a corresponding right parenthesis ')'.
+// 2. Any right parenthesis ')' must have a corresponding left parenthesis '('.
+// 3. Left parenthesis '(' must go before the corresponding right parenthesis ')'.
+// 4. '*' could be treated as a single right parenthesis ')' or a single left parenthesis '(' or an empty string "".
+// Example:
+// Input: s = "(*))"
+// Output: true
+// Explanation: The string is valid since it can be converted to "(())" or "()" or "(()".
+// Approach:
+// We use two variables min and max to represent the minimum and maximum possible number of open parentheses.
+// We iterate through the string and update these variables based on the current character.
+// If at any point, max becomes negative, it means there are more closing parentheses than opening ones, so we return false.
+// If min becomes negative, we reset it to 0 since '*' can balance it out.
+// Finally, we return true if min is 0 at the end, indicating all open parentheses are closed.
+// Time Complexity: O(n), where n is the length of the string. Each character is processed once.
+// Space Complexity: O(1), since we are using a fixed number of extra variables.
 
-Example:
-Input: s = "(*))"
-Output: true
-
-APPROACH:
-1. Use two stacks, one to store the indices of open parentheses '(' and another for stars '*'.
-2. Traverse the string:
-   a. Push the index to the corresponding stack if the character is '(' or '*'.
-   b. If the character is ')', pop from the openParentheses stack if not empty, otherwise pop from the stars stack.
-   c. If neither stack can provide a match, the string is invalid.
-3. After traversal, attempt to match any remaining open parentheses with stars.
-4. If all open parentheses are matched, the string is valid.
-
-CODE:
-*/
-
-#include <stack>
 #include <string>
 using namespace std;
 
 bool checkValidString(string s) {
-    stack<int> openParentheses;
-    stack<int> stars; // Store indices of stars for greedy matching
-    
-    for (int i = 0; i < s.size(); ++i) {
+    int n = s.size();  // Length of the input string
+    int minOpen = 0;   // Minimum possible number of open parentheses
+    int maxOpen = 0;   // Maximum possible number of open parentheses
+
+    // Iterate through the string
+    for (int i = 0; i < n; ++i) {
         if (s[i] == '(') {
-            openParentheses.push(i);
-        } else if (s[i] == '*') {
-            stars.push(i);
-        } else { // Closing parenthesis ')'
-            if (!openParentheses.empty()) {
-                openParentheses.pop();
-            } else if (!stars.empty()) {
-                stars.pop();
-            } else {
-                return false;
-            }
-        }
-    }
-    
-    // Greedily match remaining stars to open parentheses
-    while (!openParentheses.empty() && !stars.empty()) {
-        if (openParentheses.top() < stars.top()) {
-            openParentheses.pop();
-            stars.pop();
+            minOpen++;  // Increase both min and max for '('
+            maxOpen++;
+        } else if (s[i] == ')') {
+            minOpen--;  // Decrease both min and max for ')'
+            maxOpen--;
         } else {
-            break; // If no more valid matches can be made
+            minOpen--;  // Decrease min and increase max for '*'
+            maxOpen++;
+        }
+
+        if (minOpen < 0) {
+            minOpen = 0;  // Reset min to 0 if it becomes negative
+        }
+        if (maxOpen < 0) {
+            return false; // Return false if max becomes negative
         }
     }
-    
-    return openParentheses.empty(); // If all open parentheses are matched
+
+    return minOpen == 0; // Return true if min is 0 at the end
 }
-
-/*
-EXAMPLE USAGE:
-int main() {
-    string s = "(*))";
-    bool result = checkValidString(s);
-    cout << (result ? "true" : "false") << endl; // Output: true
-    return 0;
-}
-
-TIME COMPLEXITY:
-- O(n) where n is the length of the string. We iterate through the string twice.
-
-SPACE COMPLEXITY:
-- O(n) for storing the indices of open parentheses and stars.
-*/
