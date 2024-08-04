@@ -24,22 +24,33 @@ APPROACH:
 
 CODE:*/
 
-int totalFruits(int N, vector<int>& fruits) {
-    unordered_map<int, int> mp;
-    int ans = 0, start = 0;
-    for(int i = 0; i < fruits.size(); i++) {
-        mp[fruits[i]]++;
-        while(mp.size() > 2) {
-            mp[fruits[start]]--;
-            if(mp[fruits[start]] == 0)
-                mp.erase(fruits[start]);
-            start++;
+    int totalFruits(vector<int> &nums) {
+          int left = 0;   // Left pointer for the sliding window
+    int right = 0;  // Right pointer for the sliding window
+    int maxLen = 0; // Maximum length of the subarray with at most k distinct elements
+    unordered_map<int, int> mpp; // Hashmap to keep track of the count of each element
+    // Iterate over the array with the right pointer
+    while (right < nums.size()) {
+        mpp[nums[right]]++; // Increment the count of the current element
+
+        // If the number of distinct elements exceeds k, move the left pointer
+        if (mpp.size() > 2) {
+            mpp[nums[left]]--; // Decrement the count of the element at the left pointer
+            if (mpp[nums[left]] == 0) {
+                mpp.erase(nums[left]); // Remove the element if its count becomes 0
+            }
+            left++; // Move the left pointer to the right
         }
-        if(mp.size() <= 2)
-            ans = max(ans, i - start + 1);
+
+        // Update the maximum length of the subarray
+     if (mpp.size()<= 2)   maxLen = max(maxLen, right - left + 1);
+        
+        // Move the right pointer to the next element
+        right++;
     }
-    return ans;
-}
+
+    return maxLen; // 
+    }
 
 /*
 COMPLEXITY ANALYSIS:
