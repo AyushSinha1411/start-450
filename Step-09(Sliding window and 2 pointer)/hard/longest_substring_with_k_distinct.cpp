@@ -1,56 +1,41 @@
-/*
-QUESTION:
-Write a function to find the length of the longest substring that contains at most k distinct characters in the given string s.
-
-Example:
-Input: s = "eceba", k = 2
-Output: 3
-Explanation: The longest substring with at most 2 distinct characters is "ece" with a length of 3.
-
-APPROACH:
-1. Use a sliding window technique to maintain a window with at most k distinct characters.
-2. Initialize two pointers, left and right, to define the window.
-3. Use a map to keep track of the frequency of each character in the current window.
-4. Iterate through the string with the right pointer.
-5. Add the current character to the frequency map.
-6. If the size of the map exceeds k, move the left pointer to the right until the size of the map is at most k.
-7. Update the maximum length of the window during the iteration.
-8. Return the length of the longest valid window.
-
-CODE:
-*/
+// Question: Given a string s and an integer k, return the length of the longest substring that contains at most k distinct characters.
+// Example:
+// Input: s = "eceba", k = 2
+// Output: 3
+// Explanation: The substring is "ece" with length 3.
+// Approach:
+// We use the sliding window technique with a hashmap to keep track of the frequency of each character in the current window. 
+// We expand the window by moving the right pointer, and when the number of distinct characters exceeds k, we move the left pointer to maintain the condition. 
+// The maximum length of the valid window is updated during the process.
+// Time Complexity: O(n), where n is the length of the string. Each character is visited at most twice.
+// Space Complexity: O(256) = O(1), since the size of the hashmap is constant.
 
 #include <string>
 #include <unordered_map>
+#include <algorithm>
 using namespace std;
 
-// Function to find the length of the longest substring with at most k distinct characters
 int lengthOfLongestSubstringKDistinct(string s, int k) {
-    int n = s.length();
-    int maxSize = 0;
-    unordered_map<char, int> counter;
+    int maxLen = 0; // Maximum length of the substring with at most k distinct characters
+    int left = 0;   // Left pointer for the sliding window
+    unordered_map<char, int> mpp; // Hashmap to keep track of the count of each character
 
-    for (int right = 0; right < n; right++) {
-        counter[s[right]]++;
+    // Iterate over the string with the right pointer
+    for (int right = 0; right < s.size(); ++right) {
+        mpp[s[right]]++; // Increment the count of the current character
 
-        // While the number of distinct characters exceeds k, move the left pointer
-        while (counter.size() > k) {
-            char leftChar = s[right - maxSize];
-            counter[leftChar]--;
-            if (counter[leftChar] == 0) {
-                counter.erase(leftChar);
+        // If the number of distinct characters exceeds k, move the left pointer
+       if (mpp.size() > k) {
+            mpp[s[left]]--; // Decrement the count of the character at the left pointer
+            if (mpp[s[left]] == 0) {
+                mpp.erase(s[left]); // Remove the character if its count becomes 0
             }
-            maxSize++;
+            left++; // Move the left pointer to the right
         }
 
-        // Update the maximum size of the window
-        maxSize = max(maxSize, right - maxSize + 1);
+        // Update the maximum length of the substring
+        maxLen = max(maxLen, right - left + 1);
     }
 
-    return maxSize;
+    return maxLen; // Return the maximum length of the substring with at most k distinct characters
 }
-
-/*
-TIME COMPLEXITY: O(N), where N is the length of the string. This is because each character is visited at most twice (once by the right pointer and once by the left pointer).
-SPACE COMPLEXITY: O(K), since the map can hold at most k characters.
-*/
