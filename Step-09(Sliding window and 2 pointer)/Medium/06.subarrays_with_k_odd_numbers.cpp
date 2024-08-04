@@ -20,31 +20,39 @@ APPROACH:
 CODE:
 */
 
-#include <vector>
-using namespace std;
-
-// Function to find the number of subarrays with exactly k odd numbers
-int numberOfSubarrays(vector<int>& A, int k) {
-    int res = 0, i = 0, count = 0, n = A.size();
-    
-    for (int j = 0; j < n; j++) {
-        if (A[j] & 1) {
-            --k;
-            count = 0;
-        }
-
-        // Move the start pointer to the right until k is no longer zero
-        while (k == 0) {
-            k += A[i++] & 1;
-            ++count;
-        }
-
-        // Add the count to the result
-        res += count;
+ int numberOfSubarrays(vector<int>& nums, int goal) {
+     return lessequaltok(nums, goal) - lessequaltok(nums, goal - 1);
     }
-    
-    return res;
+    // Helper function to find the number of subarrays with sum less than or equal to a given value
+int lessequaltok(vector<int>& nums, int goal) {
+    // If the goal is negative, there are no valid subarrays
+    if (goal < 0)
+        return 0;
+
+    int l = 0;   // Left pointer for the sliding window
+    int r = 0;   // Right pointer for the sliding window
+    int ans = 0; // Count of subarrays with sum less than or equal to goal
+    int n = nums.size(); // Length of the input array
+    int sum = 0; // Current sum of the sliding window
+
+    // Iterate over the array with the right pointer
+    while (r < n) {
+        sum += nums[r]%2; // Add the current element to the sum
+
+        // While the sum exceeds the goal, move the left pointer
+        while (sum > goal) {
+            sum -= nums[l]%2; // Subtract the element at the left pointer from the sum
+            l++; // Move the left pointer to the right
+        }
+
+        // Count the number of valid subarrays ending at the current position
+        ans += (r - l + 1);
+        r++; // Move the right pointer to the next element
+    }
+
+    return ans; // Return the count of subarrays with sum less than or equal to goal
 }
+
 
 /*
 TIME COMPLEXITY: O(N), where N is the length of the array. This is because each element is visited at most twice (once by the j pointer and once by the i pointer).
