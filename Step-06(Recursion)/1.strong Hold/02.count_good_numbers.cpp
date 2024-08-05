@@ -1,57 +1,48 @@
-/*
-QUESTION:
-Given a positive integer n, return the number of good numbers of length n. A good number is defined as a number with even digits (0, 2, 4, 6, 8) at even indices and prime digits (2, 3, 5, 7) at odd indices. The result should be returned modulo 10^9 + 7.
-
-Example:
-Input: n = 4
-Output: 400
-Explanation: 
-Even indices can be 0, 2, 4, 6, 8 (5 options) 
-Odd indices can be 2, 3, 5, 7 (4 options)
-So, the number of good numbers of length 4 is 5^2 * 4^2 = 25 * 16 = 400.
-
-APPROACH:
-1. Use modular exponentiation to efficiently compute powers modulo 10^9 + 7.
-2. Calculate the number of even and odd indexed positions in the number of length n.
-3. Compute the result using the power function to raise the count of possible digits to their respective positions.
-
-CODE:
-*/
-
-#include <iostream>
+#include <bits/stdc++.h>
 using namespace std;
 
-typedef long long ll;
+/*
+ * Question:
+ * You are given a positive integer `n`. Count all possible strings of length `n` that consist of digits 0 to 9 such that the following conditions are true:
+ * - If the index is even, the digit must be a prime number (2, 3, 5, 7) or 0.
+ * - If the index is odd, the digit must be an odd number.
+ *
+ * Approach:
+ * 1. Use a recursive function to divide the problem into smaller subproblems.
+ * 2. If n is 0, return 1 (base case).
+ * 3. Calculate the number of valid digits for each position.
+ * 4. For even positions, there are 5 choices (2, 4, 6, 8, 0) which are either even or prime.
+ * 5. For odd positions, there are 5 choices (1, 3, 5, 7, 9) which are odd numbers.
+ * 6. Recursively calculate the count for the remaining positions.
+ */
 
-// Modulo value
-int p = 1e9 + 7;
+// Define the modulo value
+const int MOD = 1e9 + 7;
 
-// Function to calculate x^y efficiently modulo p
-ll power(long long x, long long y) {
-    long long res = 1;    
-    x = x % p; // Update x if it is more than or equal to p
-    if (x == 0) return 0; 
-
-    while (y > 0) {
-        // If y is odd, multiply x with result
-        if (y & 1) res = (res * x) % p;
-        
-        // y = y / 2
-        y = y >> 1; 
-        x = (x * x) % p;
-    }
-    return res;
+// Recursive function to compute power
+long long power(long long x, long long y) {
+    if (y == 0)
+        return 1;
+    long long p = power(x, y / 2) % MOD;
+    p = (p * p) % MOD;
+    if (y % 2 == 0)
+        return p;
+    else
+        return (x * p) % MOD;
 }
 
-// Function to count good numbers of length n
-int countGoodNumbers(long long n) {
-    ll count_of_4s = n / 2;
-    ll count_of_5s = n - count_of_4s;
-    ll ans = (power(4LL, count_of_4s) % p * power(5LL, count_of_5s) % p) % p;
-    return (int)ans;
+// Main function to count good numbers
+long long countGoodNumbers(long long n) {
+    long long evenPos = (n + 1) / 2; // Number of even positions
+    long long oddPos = n / 2; // Number of odd positions
+    return (power(5, evenPos) * power(4, oddPos)) % MOD;
 }
+
 
 /*
-TIME COMPLEXITY: O(log N), where N is the length of the number. This is because the power function uses modular exponentiation which takes logarithmic time.
-SPACE COMPLEXITY: O(1), as we are using constant extra space.
-*/
+ * Time Complexity:
+ * The time complexity is O(log n) due to the power function using divide and conquer.
+ *
+ * Space Complexity:
+ * The space complexity is O(log n) due to the recursion stack in the power function.
+ */
