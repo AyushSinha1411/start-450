@@ -1,54 +1,45 @@
+#include <bits/stdc++.h>
+using namespace std;
+
 /*
-EXAMPLE:
-Input: x = 2.0, n = 10
-Output: 1024.0
-Explanation: 2.0^10 = 1024.0
+ * Question:
+ * Implement pow(x, n), which calculates x raised to the power n (i.e., x^n).
+ *
+ * Approach:
+ * 1. Use a recursive function to divide the problem into smaller subproblems.
+ * 2. If n is 0, return 1 (base case).
+ * 3. If n is negative, convert the problem to positive exponentiation by taking the reciprocal of x.
+ * 4. For positive n, recursively calculate pow(x, n // 2) and square the result.
+ * 5. If n is odd, multiply the result by x once more.
+ */
 
-QUESTION:
-Implement the function `myPow(double x, int n)` that calculates `x` raised to the power `n`.
-
-APPROACH:
-1. Initialize `ans` to 1.0 to store the result.
-2. Convert `n` to a long long variable `nn` to handle negative values correctly.
-3. If `nn` is negative, convert it to positive by multiplying it by -1.
-4. Use a while loop to iterate while `nn` is not zero:
-   - If `nn` is odd, multiply `ans` by `x` and decrement `nn` by 1.
-   - If `nn` is even, square `x` and halve `nn`.
-5. If the original `n` is negative, return the reciprocal of `ans`.
-6. Return `ans`.
-
-CODE:
-*/
-
-double myPow(double x, int n) {
-    double ans = 1.0;
-    long long nn = n;
-
-    if (nn < 0) nn = -1 * nn;
-
-    while (nn) {
-        if (nn % 2) {
-            ans = ans * x;
-            nn = nn - 1;
-        } else {
-            x = x * x;
-            nn = nn / 2;
-        }
-    }
-
-    if (n < 0) ans = 1.0 / ans;
-
-    return ans;
+double myPowHelper(double x, long long n) {
+    // Base case: n is 0
+    if (n == 0) return 1.0;
+    
+    // Recursive step: calculate the power for n // 2
+    double half = myPowHelper(x, n / 2);
+    
+    // If n is even, the result is half * half
+    // If n is odd, the result is half * half * x
+    return (n % 2 == 0) ? half * half : half * half * x;
 }
 
+double myPow(double x, int n) {
+    long long N = n;
+    // If n is negative, convert the problem to positive exponentiation
+    if (N < 0) {
+        x = 1 / x;
+        N = -N;
+    }
+    
+    // Start the recursive calculation
+    return myPowHelper(x, N);
+}
 /*
-TIME COMPLEXITY:
-- The time complexity is O(log n) because in each iteration, the exponent `nn` is halved.
-
-SPACE COMPLEXITY:
-- The space complexity is O(1) as we are using a constant amount of extra space.
-
-EXAMPLE USAGE:
-double result = myPow(2.0, 10);
-cout << result << endl; // Output: 1024.0
-*/
+ * Time Complexity:
+ * The time complexity is O(log n) because we halve the exponent in each recursive step.
+ *
+ * Space Complexity:
+ * The space complexity is O(log n) due to the recursion stack.
+ */
