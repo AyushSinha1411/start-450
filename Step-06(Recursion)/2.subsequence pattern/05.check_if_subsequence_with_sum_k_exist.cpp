@@ -15,37 +15,50 @@ APPROACH:
 CODE:
 */
 
-#include <iostream>
-#include <vector>
-using namespace std;
-
 // Recursive function to check if there exists a subsequence that adds up to the target sum
-bool solve(vector<int> &arr, int index, int sum, int s) {
-    if (index == arr.size()) {
-        return (s == sum); // Check if the current sum equals the target sum
+bool solve(vector<int> &arr, int index, int sum, int s, vector<vector<int>> &dp) {
+    // Base case: if index is less than 0
+    if (index < 0) {
+        return (sum == s); // Check if the current sum equals the target sum
     }
 
+    // Check if the current sum exceeds the target sum
     if (sum > s) {
-        return false; // If the current sum exceeds the target sum, return false
+        return false;
+    }
+
+    // Check if the subproblem is already solved
+    if (dp[index][sum] != -1) {
+        return dp[index][sum];
     }
 
     // Include the current element in the sum and recurse
-    sum += arr[index];
-    if (solve(arr, index + 1, sum, s)) return true;
-    
-    // Exclude the current element from the sum and recurse
-    sum -= arr[index];
-    if (solve(arr, index + 1, sum, s)) return true;
+    if (solve(arr, index - 1, sum + arr[index], s, dp)) {
+        return dp[index][sum] = true;
+    }
 
-    return false;
+    // Exclude the current element from the sum and recurse
+    if (solve(arr, index - 1, sum, s, dp)) {
+        return dp[index][sum] = true;
+    }
+
+    // Store the result in the memoization table
+    return dp[index][sum] = false;
 }
 
 // Function to determine if there exists a subsequence that adds up to the target sum
 bool checkSubsequenceSum(int n, vector<int>& arr, int k) {
-    return solve(arr, 0, 0, k); // Call recursive function with initial parameters
+    // Initialize the memoization table with -1
+    vector<vector<int>> dp(n, vector<int>(k + 1, -1));
+
+    // Call the recursive function with initial parameters
+    return solve(arr, n - 1, 0, k, dp);
 }
 
 /*
-TIME COMPLEXITY: O(2^N), where N is the size of the array. This is because each element can either be included or excluded from the subset.
-SPACE COMPLEXITY: O(N), due to the recursion stack for processing each element in the array.
-*/
+ * Time Complexity:
+ * The time complexity is O(n * k) because each subproblem is solved only once.
+ *
+ * Space Complexity:
+ * The space complexity is O(n * k) for the memoization table.
+ */
