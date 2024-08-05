@@ -1,61 +1,59 @@
 /*
-QUESTION:
-Given a string num that contains only digits and an integer target, return all possible combinations of num that add up to the target value by inserting the operators '+', '-', and '*' between the digits.
+ * Question:
+ * Given a string `num` that contains only digits and an integer `target`, return all possibilities to add binary operators (not unary) +, -, or *
+ * between the digits so they evaluate to the target value.
+ *
+ * Approach:
+ * 1. Use a recursive function to explore all possible ways to insert operators between the digits.
+ * 2. Use a helper function to perform the recursion, passing along the current expression, current value, previous value, and position.
+ * 3. Base case: If the position reaches the end of the string, check if the current value matches the target.
+ * 4. Recursive case: For each position, try adding each operator and recurse.
+ */
 
-Example:
-Input: num = "123", target = 6
-Output: ["1+2+3", "1*2*3"]
-Explanation: Both expressions 1+2+3 and 1*2*3 add up to 6.
-
-APPROACH:
-1. Use depth-first search (DFS) to explore all possible combinations of inserting operators.
-2. For each substring of num, consider it as an operand and recursively explore all operator insertions.
-3. Skip invalid operands that start with '0' (except for the single digit '0').
-4. Maintain the current value of the expression and the path of the expression formed so far.
-5. Add the expression to the result if it evaluates to the target value when the end of the string is reached.
-
-CODE:
-*/
-
-#include <iostream>
-#include <vector>
-#include <string>
-using namespace std;
-
-// Function to add operators between digits to achieve the target value
-vector<string> addOperators(string num, int target) {
-    vector<string> res;
-    dfs(num, target, 0, 0, "", res);
-    return res;
-}
-
-// Helper function for depth-first search
-void dfs(string num, int target, int pos, long long cur, string path, vector<string>& res) {
+void helper(string &num, int target, int pos, long currVal, long prevVal, string expr, vector<string> &result) {
+    // Base case: if the position reaches the end of the string
     if (pos == num.size()) {
-        if (cur == target) {
-            res.push_back(path);
+        // Check if the current value equals the target value
+        if (currVal == target) {
+            result.push_back(expr);
         }
         return;
     }
 
-    for (int i = pos; i < num.size(); i++) {
-        string operand = num.substr(pos, i - pos + 1);
-        if (operand.size() > 1 && operand[0] == '0') {
-            continue;
-        }
-
-        long long n = stoll(operand);
+    // Recursive case: try each possible next operand
+    for (int i = pos; i < num.size(); ++i) {
+        // Avoid numbers with leading zero
+        if (i != pos && num[pos] == '0') break;
+        
+        // Parse the current number
+        string currStr = num.substr(pos, i - pos + 1);
+        long currNum = stol(currStr);
+        
+        // If at the beginning of the expression, just recurse without any operator
         if (pos == 0) {
-            dfs(num, target, i + 1, n, operand, res);
+            helper(num, target, i + 1, currNum, currNum, currStr, result);
         } else {
-            dfs(num, target, i + 1, cur + n, path + "+" + operand, res);
-            dfs(num, target, i + 1, cur - n, path + "-" + operand, res);
-            dfs(num, target, i + 1, cur * n, path + "*" + operand, res);
+            // Try addition
+            helper(num, target, i + 1, currVal + currNum, currNum, expr + "+" + currStr, result);
+            // Try subtraction
+            helper(num, target, i + 1, currVal - currNum, -currNum, expr + "-" + currStr, result);
+            // Try multiplication
+            helper(num, target, i + 1, currVal - prevVal + prevVal * currNum, prevVal * currNum, expr + "*" + currStr, result);
         }
     }
 }
 
+// Function to find all expressions that add up to the target
+vector<string> addOperators(string num, int target) {
+    vector<string> result;
+    helper(num, target, 0, 0, 0, "", result);
+    return result;
+}
+
 /*
-TIME COMPLEXITY: O(4^N), where N is the length of the string num. This is because there are three operators and a number split decision at each position.
-SPACE COMPLEXITY: O(N), due to the recursion stack and storage of intermediate paths.
-*/
+ * Time Complexity:
+ * The time complexity is O(4^n), where n is the length of the input string `num`. This is because each position can potentially lead to four recursive calls (+, -, *, and the next digit).
+ *
+ * Space Complexity:
+ * The space complexity is O(n), where n is the length of the input string `num`, due to the recursion stack.
+ */
