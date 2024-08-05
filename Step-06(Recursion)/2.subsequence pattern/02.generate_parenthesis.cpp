@@ -20,30 +20,29 @@ CODE:
 #include <vector>
 using namespace std;
 
-// Function to generate all combinations of well-formed parentheses
-void generateParenthesis(int left, int right, string& s, vector<string>& answer) {
-    // Base case: if no more parentheses to add
-    if (left == 0 && right == 0) {
-        answer.push_back(s);
+void generateParenthesisHelper(int n, int open, int close, string current, vector<string>& result) {
+    // Base case: if the current string length is 2 * n
+    if (current.length() == 2 * n) {
+        result.push_back(current);
         return;
     }
 
-    // If the state is invalid
-    if (left > right || left < 0 || right < 0) {
-        return;
+    // If the number of open parentheses is less than n, add an open parenthesis
+    if (open < n) {
+        generateParenthesisHelper(n, open + 1, close, current + "(", result);
     }
 
-    // Add a left parenthesis and recurse
-    s.push_back('{');
-    generateParenthesis(left - 1, right, s, answer);
-    s.pop_back();
-
-    // Add a right parenthesis and recurse
-    s.push_back('}');
-    generateParenthesis(left, right - 1, s, answer);
-    s.pop_back();
+    // If the number of close parentheses is less than the number of open parentheses, add a close parenthesis
+    if (close < open) {
+        generateParenthesisHelper(n, open, close + 1, current + ")", result);
+    }
 }
 
+vector<string> generateParenthesis(int n) {
+    vector<string> result;
+    generateParenthesisHelper(n, 0, 0, "", result);
+    return result;
+}
 /*
 TIME COMPLEXITY: O(2^N), where N is the number of pairs of parentheses. This is because each position can either be an opening or closing parenthesis.
 SPACE COMPLEXITY: O(N), due to the recursion stack for processing each character in the string.
