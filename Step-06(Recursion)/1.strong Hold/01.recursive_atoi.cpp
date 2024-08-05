@@ -1,47 +1,64 @@
-// Question: Implement the `myAtoi` function which converts a string to a 32-bit signed integer (similar to C/C++'s `atoi` function). The function should discard leading whitespaces, take an optional '+' or '-' sign, and stop at the first non-digit character. If the integer is out of the 32-bit signed integer range, clamp it to INT_MAX or INT_MIN.
+#include <bits/stdc++.h>
+using namespace std;
 
-class Solution {
-public:
-    int myAtoi(string s) {
-        int i = 0; // Initialize index to traverse the string
-        int sign = 1; // Initialize sign to positive
-        long ans = 0; // Initialize answer to 0
+/*
+ * Question:
+ * Convert a string to a 32-bit signed integer (similar to C/C++'s `atoi` function). Handle leading whitespaces, optional sign, and numeric digits. 
+ * Clamp the result within the 32-bit signed integer range if necessary.
+ *
+ * Approach:
+ * 1. Define a helper function that processes the string recursively.
+ * 2. Handle the whitespace and optional sign.
+ * 3. Convert the digits to an integer recursively.
+ * 4. Clamp the result to the 32-bit signed integer range.
+ */
 
-        // Skip leading whitespace
-        while (i < s.length() && s[i] == ' ') {
-            i++;
-        }
-
-        // Check for optional sign
-        if (i < s.length() && s[i] == '-') {
-            sign = -1; // Set sign to negative
-            i++;
-        } else if (i < s.length() && s[i] == '+') {
-            i++; // Sign is positive, just skip it
-        }
-
-        // Convert digits to integer
-        while (i < s.length()) {
-            // Check if current character is a digit
-            if (s[i] >= '0' && s[i] <= '9') {
-                ans = ans * 10 + (s[i] - '0'); // Add digit to answer
-
-                // Check for overflow
-                if (ans > INT_MAX && sign == -1) {
-                    return INT_MIN; // Return INT_MIN if overflow in negative
-                } else if (ans > INT_MAX && sign == 1) {
-                    return INT_MAX; // Return INT_MAX if overflow in positive
-                }
-
-                i++; // Move to next character
-            } else {
-                break; // Break if current character is not a digit
-            }
-        }
-
-        return ans * sign; // Return final result with sign
+// Recursive function to convert string to integer
+int myAtoiHelper(string &s, int index, int sign, long long current) {
+    // Base case: end of string or non-digit character
+    if (index == s.length() || !isdigit(s[index])) {
+        return sign * current;
     }
-};
+    
+    // Append the current digit to the number
+    current = current * 10 + (s[index] - '0');
+    
+    // Clamp to the 32-bit signed integer range
+    if (sign * current <= INT_MIN) return INT_MIN;
+    if (sign * current >= INT_MAX) return INT_MAX;
+    
+    // Recursive call for the next character
+    return myAtoiHelper(s, index + 1, sign, current);
+}
 
-// Time Complexity: O(n), where n is the length of the string. Each character is processed at most once.
-// Space Complexity: O(1), since only a fixed amount of extra space is used.
+int myAtoi(string s) {
+    int index = 0;
+    // Ignore leading whitespace
+    while (index < s.length() && s[index] == ' ') {
+        index++;
+    }
+    
+    // Determine the sign
+    int sign = 1;
+    if (index < s.length() && (s[index] == '-' || s[index] == '+')) {
+        sign = (s[index] == '-') ? -1 : 1;
+        index++;
+    }
+    
+    // Start the recursive conversion
+    return myAtoiHelper(s, index, sign, 0);
+}
+
+int main() {
+    string str = "   -42";
+    cout << myAtoi(str) << endl; // Output: -42
+    return 0;
+}
+
+/*
+ * Time Complexity:
+ * The time complexity is O(n), where n is the length of the input string.
+ *
+ * Space Complexity:
+ * The space complexity is O(n) due to the recursion stack.
+ */
