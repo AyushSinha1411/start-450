@@ -15,49 +15,33 @@ APPROACH:
 CODE:
 */
 
-#include <iostream>
-#include <vector>
-#include <unordered_map>
-using namespace std;
+// Map digits to their corresponding letters
+    vector<string> digitToLetters = {"",    "",    "abc",  "def", "ghi",
+                                     "jkl", "mno", "pqrs", "tuv", "wxyz"};
 
-class Solution {
-private:
-    vector<string> combinations;
-    unordered_map<char, string> letters = {
-        {'2', "abc"}, {'3', "def"},  {'4', "ghi"}, {'5', "jkl"},
-        {'6', "mno"}, {'7', "pqrs"}, {'8', "tuv"}, {'9', "wxyz"}};
-    string phoneDigits;
-
-public:
-    // Function to return all possible letter combinations that the number could represent
-    vector<string> letterCombinations(string digits) {
-        if (digits.empty()) {
-            return combinations;
-        }
-        phoneDigits = digits;
-        backtrack(0, "");
-        return combinations;
-    }
-
-private:
-    // Backtracking function to generate all letter combinations
-    void backtrack(int index, string path) {
-        // If the current path length matches the length of phoneDigits, add to combinations
-        if (path.length() == phoneDigits.length()) {
-            combinations.push_back(path);
+    // Recursive function to generate combinations
+    void findCombinations(int ind, string &digits, string &current, vector<string> &ans) {
+        if (ind == digits.size()) {
+            ans.push_back(current);
             return;
         }
-        // Get the letters corresponding to the current digit
-        string possibleLetters = letters[phoneDigits[index]];
-        for (char letter : possibleLetters) {
-            // Append the letter and recurse to the next digit
-            path.push_back(letter);
-            backtrack(index + 1, path);
-            // Backtrack and remove the last letter
-            path.pop_back();
+        
+        string letters = digitToLetters[digits[ind] - '0'];
+        for (char letter : letters) {
+            current.push_back(letter);
+            findCombinations(ind + 1, digits, current, ans);
+            current.pop_back();
         }
     }
-};
+
+    vector<string> letterCombinations(string digits) {
+        if (digits.empty()) return {};
+        
+        vector<string> ans;
+        string current;
+        findCombinations(0, digits, current, ans);
+        return ans;
+    }
 
 /*
 TIME COMPLEXITY: O(4^N), where N is the length of the input digits. This is because each digit can map to up to 4 letters.
