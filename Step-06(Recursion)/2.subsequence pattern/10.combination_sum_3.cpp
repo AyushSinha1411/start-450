@@ -1,54 +1,52 @@
-/*
-QUESTION:
-Find all possible combinations of k numbers that add up to a number n, given that only numbers from 1 to 9 can be used and each combination should be a unique set of numbers.
-
-Example:
-Input: k = 3, n = 7
-Output: [[1, 2, 4]]
-Explanation: The only combination of 3 numbers that add up to 7 is [1, 2, 4].
-
-APPROACH:
-1. Use a backtracking function to explore all possible combinations.
-2. At each step, decide whether to include the current number in the combination.
-3. Ensure that the sum of the current combination remains within the target and that the combination has exactly k numbers.
-4. Add valid combinations to the result.
-
-CODE:
-*/
-
-#include <iostream>
-#include <vector>
+#include <bits/stdc++.h>
 using namespace std;
 
-// Backtracking function to find all combinations of k numbers that add up to n
-void backtrack(int remain, int k, vector<int>& comb, int next_start, vector<vector<int>>& results) {
-    if (remain == 0 && comb.size() == k) {
-        // If the combination is valid, add it to the results
-        results.push_back(comb);
-        return;
-    } else if (remain < 0 || comb.size() == k) {
-        // If the sum exceeds the target or the combination size exceeds k, return
+/*
+ * Question:
+ * Find all possible combinations of `k` numbers that add up to a number `n`, given that only numbers from 1 to 9 can be used and each combination should be a unique set of numbers.
+ * Return all possible combinations in a list.
+ *
+ * Approach:
+ * 1. Use a recursive function to explore all possible combinations.
+ * 2. Skip duplicates to ensure each combination is unique.
+ * 3. Sort the array initially to handle duplicates efficiently.
+ */
+
+// Recursive function to generate combinations
+void combinationSum3Helper(int ind, int k, int target, vector<int> &combination, vector<vector<int>> &ans) {
+    // Base case: if the combination size is k and target is 0, add the combination to the result
+    if (combination.size() == k && target == 0) {
+        ans.push_back(combination);
         return;
     }
-
-    // Iterate through the reduced list of candidates
-    for (int i = next_start; i < 9; ++i) {
-        comb.push_back(i + 1);
-        backtrack(remain - i - 1, k, comb, i + 1, results);
-        comb.pop_back();
+    // If combination size exceeds k or target becomes negative, return
+    if (combination.size() > k || target < 0) {
+        return;
+    }
+    
+    // Explore combinations starting from the current index
+    for (int i = ind; i <= 9; i++) {
+        // Include the current number in the combination
+        combination.push_back(i);
+        // Recurse with the next index, reduced target, and updated combination
+        combinationSum3Helper(i + 1, k, target - i, combination, ans);
+        // Backtrack: remove the last number added
+        combination.pop_back();
     }
 }
 
-// Function to return all possible combinations of k numbers that add up to n
+// Function to return all combinations of k numbers that add up to n
 vector<vector<int>> combinationSum3(int k, int n) {
-    vector<vector<int>> results;
-    vector<int> comb;
-
-    backtrack(n, k, comb, 0, results);
-    return results;
+    vector<vector<int>> ans; // To store the final combinations
+    vector<int> combination; // To store the current combination being built
+    combinationSum3Helper(1, k, n, combination, ans); // Start the recursion from number 1
+    return ans; // Return the result
 }
 
 /*
-TIME COMPLEXITY: O(9^k), where k is the number of elements in the combination. This is because there are at most 9 candidates to choose from, and the depth of recursion is k.
-SPACE COMPLEXITY: O(k), due to the recursion stack for processing each combination.
-*/
+ * Time Complexity:
+ * The time complexity is O(2^n) because each element can either be included or excluded from the combination.
+ *
+ * Space Complexity:
+ * The space complexity is O(k) for storing the current combination and O(2^n) for storing all combinations.
+ */
