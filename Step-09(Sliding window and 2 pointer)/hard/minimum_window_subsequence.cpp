@@ -16,41 +16,46 @@ APPROACH:
 CODE:
 */
 
-#include <string>
-#include <climits>
+#include <bits/stdc++.h>
 using namespace std;
 
-// Function to find the minimum window in s1 containing all characters of s2 in order
 string minWindow(string s1, string s2) {
-    int m = s1.size();
-    int n = s2.size();
-    int start = 0, len = INT_MAX, count = 0;
+    int m = s1.size(); // Length of s1
+    int n = s2.size(); // Length of s2
+    int start = 0; // Start index of the minimum window in s1
+    int len = INT_MAX; // Length of the minimum window, initialized to a very large value
+    int count = 0; // Count of matched characters from s2 in s1
 
+    // Iterate through s1 to find the minimum window that contains s2 in order
     for (int i = 0; i < m; i++) {
-        if (s1[i] == s2[count]) count++;
+        if (s1[i] == s2[count]) count++; // If current character in s1 matches the current character in s2, increase the count
 
-        // All characters in s2 are matched. Now reduce the window to the rightmost part which has all the characters in s2
+        // When all characters in s2 are matched in order
         if (count == n) {
-            int j = i;
+            int j = i; // Start from the current position i
+            // Move backward to find the minimum window by matching all characters of s2 in reverse order
             while (count > 0) {
                 if (s2[count - 1] == s1[j--]) {
-                    count--;
+                    count--; // Reduce the count as we match characters from s2 in reverse order
                 }
             }
-            j++; // index in s1 which is the first character in s2
+            j++; // j is now the index in s1 where the first character of s2 is found in this window
 
+            // Update the minimum length and start index if a smaller window is found
             if (len > i - j + 1) {
                 len = i - j + 1;
                 start = j;
             }
-            // move back i so it starts next search from j+1 in next iteration
+            // Move i back to the index after the start of the found window so the next search starts from j+1
             i = j;
         }
     }
 
+    // If len is not updated, no valid window was found, return an empty string
     if (len == INT_MAX) return "";
-    return s1.substr(start, len);
+    return s1.substr(start, len); // Return the minimum window substring
 }
+
 
 /*
 TIME COMPLEXITY: O(M*N), where M is the length of s1 and N is the length of s2. This is because each character in s1 is visited and potentially re-visited to find the minimal window.
