@@ -27,7 +27,7 @@ void insertionSort(vector<int>& arr) {
     int n = arr.size(); // Get the size of the array
 
     // Iterate over each element in the array starting from the second element
-    for (int i = 0; i < n-1; ++i) {
+    for (int i = 0; i < n; ++i) {//!!!!!here it is till i<n and not i<n-1 remember!!!!!
         int j = i;
 
         // Move elements of arr[0..i-1], that are greater than key, to one position ahead of their current position
