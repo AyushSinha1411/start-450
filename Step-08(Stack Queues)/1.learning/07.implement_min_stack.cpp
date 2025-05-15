@@ -24,57 +24,83 @@ APPROACH:
 
 CODE:
 */
-
-#include <iostream>
-#include <stack>
-using namespace std;
-
+// Class to implement Minimum Stack
 class MinStack {
-    stack<long long> st;
-    long long mini;
-
+private:
+    // Initialize a stack
+    stack <int> st;
+    // To store the minimum value 
+    int mini;
+    
 public:
-    /** Initialize your data structure here. */
+    
+    // Empty Constructor
     MinStack() {
-        while (!st.empty()) st.pop();
-        mini = INT_MAX;
     }
-
+    
+    // Method to push a value in stack
     void push(int value) {
-        long long val = value;
-        if (st.empty()) {
-            mini = val;
-            st.push(val);
-        } else {
-            if (val < mini) {
-                st.push(2 * val - mini);
-                mini = val;
-            } else {
-                st.push(val);
-            }
+        
+        // If stack is empty
+        if(st.empty()) {
+            //Update the minimum value
+            mini = value;
+            
+            // Push current value as minimum
+            st.push( value );
+            return;
+        }
+        
+        // If the value is greater than the minimum
+        if(value > mini) {
+            st.push(value);
+        }
+        else {
+            // Add the modified value to stack
+            st.push(2 * value - mini);
+            // Update the minimum
+            mini = value;
         }
     }
-
+    
+    // Method to pop a value from stack
     void pop() {
-        if (st.empty()) return;
-        long long el = st.top();
-        st.pop();
-        if (el < mini) {
-            mini = 2 * mini - el;
+        // Base case
+        if(st.empty()) return;
+        
+        // Get the top
+        int x = st.top();
+        st.pop(); // Pop operation
+        
+        // If the modified value was added to stack
+        if(x < mini) {
+            // Update the minimum
+            mini = 2 * mini - x;
         }
     }
-
+    
+    // Method to get the top of stack
     int top() {
-        if (st.empty()) return -1;
-        long long el = st.top();
-        if (el < mini) return mini;
-        return el;
+        // Base case
+        if(st.empty()) return -1;
+        
+        // Get the top
+        int x = st.top();
+        
+        // Returnn top if minimum is less than the top
+        if(mini < x) return x;
+        
+        //Otherwise return mini
+        return mini;
     }
-
+    
+    // Method to get the minimum in stack
     int getMin() {
+        // Return the minimum
         return mini;
     }
 };
+
 
 /*
 TIME COMPLEXITY:
