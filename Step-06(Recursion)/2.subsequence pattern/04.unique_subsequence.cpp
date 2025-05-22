@@ -14,53 +14,29 @@ APPROACH:
 
 CODE:
 */
-
-#include <iostream>
-#include <unordered_set>
-using namespace std;
-
-unordered_set<string> sn;
-
 // Recursive function to generate all unique subsequences of a string
-void subsequences(string& s, char op[], int i, int j) {
-    // Base case: if the end of the string is reached
-    if (s[i] == '\0') {
-        op[j] = '\0';
-        // Insert each generated subsequence into the set
-        sn.insert(op);
+void generateSubsequences(const string& s, int index, string current, unordered_set<string>& subseqSet) {
+    if (index == s.length()) {
+        subseqSet.insert(current);
         return;
     }
 
-    // Include the current character in the subsequence
-    op[j] = s[i];
-    subsequences(s, op, i + 1, j + 1);
+    // Include current character
+    generateSubsequences(s, index + 1, current + s[index], subseqSet);
 
-    // Exclude the current character from the subsequence
-    subsequences(s, op, i + 1, j);
+    // Exclude current character
+    generateSubsequences(s, index + 1, current, subseqSet);
 }
 
 // Function to determine which string has more unique subsequences
-string betterString(string str1, string str2) {
-    int m = str1.size();
-    char op[m + 1];
-    subsequences(str1, op, 0, 0);
+string betterString(const string& str1, const string& str2) {
+    unordered_set<string> set1, set2;
 
-    int a = sn.size();
-    sn.clear();
+    generateSubsequences(str1, 0, "", set1);
+    generateSubsequences(str2, 0, "", set2);
 
-    m = str2.size();
-    char op1[m + 1];
-    subsequences(str2, op1, 0, 0);
-
-    int b = sn.size();
-
-    if (b > a) {
-        return str2;
-    }
-
-    return str1;
+    return (set2.size() > set1.size()) ? str2 : str1;
 }
-
 /*
 TIME COMPLEXITY: O(2^N), where N is the length of the string. This is because there are 2^N possible subsequences for a string of length N.
 SPACE COMPLEXITY: O(2^N), due to the storage of unique subsequences in the set and the recursion stack.
